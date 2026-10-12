@@ -1,0 +1,105 @@
+spec_version: 1
+dataset: pusht
+source_jsonl: jsonl/traj/pusht.jsonl
+value_space: action_raw.net_action / action_std (pusht_v1.yaml); the same value as the semantic text (mean not subtracted)
+side_rule: v >= 0 -> pos direction word, v < 0 -> neg (same as the semantic render)
+bin_rule: 'bin = #(abs_edges <= |v|) (bisect_right on the round-6 edges); counts are re-tallied with the same rule'
+edge_rule: 'per direction, np.quantile of |v| (6-bin: [1/3, 2/3], 4-bin: [0.5]), round-6'
+n_pairs: 2243311
+purpose: training lang text and planning renders share the same bin edges and phrases
+builder: data_preparation/build_sim_traj.py
+dims:
+- key: dx
+  kind: move
+  pos_dir: right
+  neg_dir: left
+  zero_count: 0
+  neg_count: 1173278
+  pos_count: 1070033
+  bins6:
+    neg_abs_edges:
+    - 0.389185
+    - 0.862954
+    pos_abs_edges:
+    - 0.34692
+    - 0.768887
+    neg_counts:
+    - 391092
+    - 391092
+    - 391094
+    pos_counts:
+    - 356678
+    - 356676
+    - 356679
+    neg_phrases:
+    - slightly left
+    - left
+    - far left
+    pos_phrases:
+    - slightly right
+    - right
+    - far right
+  bins4:
+    neg_abs_edges:
+    - 0.601503
+    pos_abs_edges:
+    - 0.529069
+    neg_counts:
+    - 586638
+    - 586640
+    pos_counts:
+    - 535016
+    - 535017
+    neg_phrases:
+    - slightly left
+    - far left
+    pos_phrases:
+    - slightly right
+    - far right
+- key: dy
+  kind: move
+  pos_dir: down
+  neg_dir: up
+  zero_count: 0
+  neg_count: 1096876
+  pos_count: 1146435
+  bins6:
+    neg_abs_edges:
+    - 0.369166
+    - 0.84865
+    pos_abs_edges:
+    - 0.38619
+    - 0.949172
+    neg_counts:
+    - 365626
+    - 365626
+    - 365624
+    pos_counts:
+    - 382145
+    - 382147
+    - 382143
+    neg_phrases:
+    - slightly up
+    - up
+    - far up
+    pos_phrases:
+    - slightly down
+    - down
+    - far down
+  bins4:
+    neg_abs_edges:
+    - 0.582646
+    pos_abs_edges:
+    - 0.639891
+    neg_counts:
+    - 548438
+    - 548438
+    pos_counts:
+    - 573217
+    - 573218
+    neg_phrases:
+    - slightly up
+    - far up
+    pos_phrases:
+    - slightly down
+    - far down

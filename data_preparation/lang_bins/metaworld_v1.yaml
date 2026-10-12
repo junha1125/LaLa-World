@@ -1,0 +1,200 @@
+spec_version: 1
+dataset: metaworld
+source_jsonl: jsonl/traj/metaworld.jsonl
+value_space: action_raw.net_action / action_std (metaworld_v1.yaml); the same value as the semantic text (mean not
+  subtracted)
+side_rule: v >= 0 -> pos direction word, v < 0 -> neg (same as the semantic render)
+bin_rule: 'bin = #(abs_edges <= |v|) (bisect_right on the round-6 edges); counts are re-tallied with the same rule'
+edge_rule: 'per direction, np.quantile of |v| (6-bin: [1/3, 2/3], 4-bin: [0.5]), round-6'
+n_pairs: 1184400
+purpose: training lang text and planning renders share the same bin edges and phrases
+builder: data_preparation/build_sim_traj.py
+dims:
+- key: dx
+  kind: move
+  pos_dir: right
+  neg_dir: left
+  zero_count: 0
+  neg_count: 597536
+  pos_count: 586864
+  bins6:
+    neg_abs_edges:
+    - 0.460809
+    - 1.072369
+    pos_abs_edges:
+    - 0.460558
+    - 1.116814
+    neg_counts:
+    - 199179
+    - 199178
+    - 199179
+    pos_counts:
+    - 195622
+    - 195620
+    - 195622
+    neg_phrases:
+    - slightly left
+    - left
+    - far left
+    pos_phrases:
+    - slightly right
+    - right
+    - far right
+  bins4:
+    neg_abs_edges:
+    - 0.740613
+    pos_abs_edges:
+    - 0.751446
+    neg_counts:
+    - 298768
+    - 298768
+    pos_counts:
+    - 293431
+    - 293433
+    neg_phrases:
+    - slightly left
+    - far left
+    pos_phrases:
+    - slightly right
+    - far right
+- key: dy
+  kind: move
+  pos_dir: forward
+  neg_dir: backward
+  zero_count: 0
+  neg_count: 487275
+  pos_count: 697125
+  bins6:
+    neg_abs_edges:
+    - 0.413216
+    - 0.958694
+    pos_abs_edges:
+    - 0.599558
+    - 1.437697
+    neg_counts:
+    - 162425
+    - 162425
+    - 162425
+    pos_counts:
+    - 232375
+    - 232375
+    - 232375
+    neg_phrases:
+    - slightly backward
+    - backward
+    - far backward
+    pos_phrases:
+    - slightly forward
+    - forward
+    - far forward
+  bins4:
+    neg_abs_edges:
+    - 0.661367
+    pos_abs_edges:
+    - 0.988114
+    neg_counts:
+    - 243636
+    - 243639
+    pos_counts:
+    - 348563
+    - 348562
+    neg_phrases:
+    - slightly backward
+    - far backward
+    pos_phrases:
+    - slightly forward
+    - far forward
+- key: dz
+  kind: move
+  pos_dir: up
+  neg_dir: down
+  zero_count: 0
+  neg_count: 709791
+  pos_count: 474609
+  bins6:
+    neg_abs_edges:
+    - 0.562879
+    - 1.272467
+    pos_abs_edges:
+    - 0.393329
+    - 0.969846
+    neg_counts:
+    - 236597
+    - 236597
+    - 236597
+    pos_counts:
+    - 158204
+    - 158202
+    - 158203
+    neg_phrases:
+    - slightly down
+    - down
+    - far down
+    pos_phrases:
+    - slightly up
+    - up
+    - far up
+  bins4:
+    neg_abs_edges:
+    - 0.900812
+    pos_abs_edges:
+    - 0.639246
+    neg_counts:
+    - 354896
+    - 354895
+    pos_counts:
+    - 237304
+    - 237305
+    neg_phrases:
+    - slightly down
+    - far down
+    pos_phrases:
+    - slightly up
+    - far up
+- key: dgrip
+  kind: grip
+  pos_dir: tighten
+  neg_dir: loosen
+  zero_count: 0
+  neg_count: 435319
+  pos_count: 749081
+  bins6:
+    neg_abs_edges:
+    - 0.48268
+    - 1.089812
+    pos_abs_edges:
+    - 0.746785
+    - 1.375875
+    neg_counts:
+    - 145105
+    - 145107
+    - 145107
+    pos_counts:
+    - 249694
+    - 249693
+    - 249694
+    neg_phrases:
+    - loosen the grip a little
+    - loosen the grip
+    - loosen the grip a lot
+    pos_phrases:
+    - tighten the grip a little
+    - tighten the grip
+    - tighten the grip a lot
+  bins4:
+    neg_abs_edges:
+    - 0.779442
+    pos_abs_edges:
+    - 1.084453
+    neg_counts:
+    - 217658
+    - 217661
+    pos_counts:
+    - 374540
+    - 374541
+    neg_phrases:
+    - loosen the grip a little
+    - loosen the grip a lot
+    pos_phrases:
+    - tighten the grip a little
+    - tighten the grip a lot

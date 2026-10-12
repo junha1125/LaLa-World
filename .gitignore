@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+
+# data, weights, runs (root-level entries without a trailing slash so symlinks are ignored too)
+/data
+/hf-models
+/third_party
+logs/
+checkpoints/
+wandb/
+MUJOCO_LOG.TXT
+
+# editor / OS
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# upstream checkout kept for reference
+jepa-wms-origin-removed-before-push/
+
+# not yet released: remove an entry when its code is published
+RAEv2/
+app/
+configs/
+decoder/
+evals/
+src/
+tests/
+scripts/export_checkpoint.py
+
+# local notes and drafts
+README_1.md
+README_2.md
+README_3.md
+response.md
+/*.pdf

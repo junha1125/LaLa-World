@@ -1,0 +1,106 @@
+spec_version: 1
+dataset: point_maze
+source_jsonl: jsonl/traj/point_maze.jsonl
+value_space: action_raw.net_action / action_std (point_maze_v1.yaml); the same value as the semantic text (mean
+  not subtracted)
+side_rule: v >= 0 -> pos direction word, v < 0 -> neg (same as the semantic render)
+bin_rule: 'bin = #(abs_edges <= |v|) (bisect_right on the round-6 edges); counts are re-tallied with the same rule'
+edge_rule: 'per direction, np.quantile of |v| (6-bin: [1/3, 2/3], 4-bin: [0.5]), round-6'
+n_pairs: 190000
+purpose: training lang text and planning renders share the same bin edges and phrases
+builder: data_preparation/build_sim_traj.py
+dims:
+- key: fx
+  kind: force
+  pos_dir: right
+  neg_dir: left
+  zero_count: 0
+  neg_count: 95288
+  pos_count: 94712
+  bins6:
+    neg_abs_edges:
+    - 0.442331
+    - 0.982007
+    pos_abs_edges:
+    - 0.443401
+    - 0.993589
+    neg_counts:
+    - 31763
+    - 31762
+    - 31763
+    pos_counts:
+    - 31571
+    - 31570
+    - 31571
+    neg_phrases:
+    - gently left
+    - left
+    - hard left
+    pos_phrases:
+    - gently right
+    - right
+    - hard right
+  bins4:
+    neg_abs_edges:
+    - 0.69029
+    pos_abs_edges:
+    - 0.694892
+    neg_counts:
+    - 47644
+    - 47644
+    pos_counts:
+    - 47356
+    - 47356
+    neg_phrases:
+    - gently left
+    - hard left
+    pos_phrases:
+    - gently right
+    - hard right
+- key: fy
+  kind: force
+  pos_dir: down
+  neg_dir: up
+  zero_count: 0
+  neg_count: 94971
+  pos_count: 95029
+  bins6:
+    neg_abs_edges:
+    - 0.441017
+    - 0.984133
+    pos_abs_edges:
+    - 0.443599
+    - 0.989671
+    neg_counts:
+    - 31657
+    - 31657
+    - 31657
+    pos_counts:
+    - 31676
+    - 31676
+    - 31677
+    neg_phrases:
+    - gently up
+    - up
+    - hard up
+    pos_phrases:
+    - gently down
+    - down
+    - hard down
+  bins4:
+    neg_abs_edges:
+    - 0.689548
+    pos_abs_edges:
+    - 0.691013
+    neg_counts:
+    - 47486
+    - 47485
+    pos_counts:
+    - 47515
+    - 47514
+    neg_phrases:
+    - gently up
+    - hard up
+    pos_phrases:
+    - gently down
+    - hard down

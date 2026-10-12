@@ -1,0 +1,56 @@
+spec_version: 3
+dataset: wall
+domain_prefix: '[wall] '
+source_jsonl: jsonl/traj/wall.jsonl
+record_layout: traj (one line per episode; n_records = number of stride-1 transitions)
+n_records: 88320
+n_episodes: 1920
+purpose: shared normalization space for text rendering and planning (action chunk = 5-step net action, all stride-1
+  window starts)
+text_normalized: true
+net_window: 5
+action_dim: 2
+action_dims:
+- dx
+- dy
+units:
+  action: 5-step sum of the per-step position delta (simulator units)
+  proprio: state = x, y position (simulator units)
+action_mean:
+- -0.021174
+- 0.074053
+action_std:
+- 3.308465
+- 3.273188
+action_clip_lo:
+- -5.638864
+- -5.596773
+action_clip_hi:
+- 5.631967
+- 5.617895
+proprio_dim: 2
+proprio_dims:
+- x
+- y
+proprio_mean:
+- 31.888888
+- 31.785652
+proprio_std:
+- 17.608253
+- 17.224999
+planning:
+  sample_space: z-score (action_mean/std) Gaussian samples, clipped in z space
+  clip: z-space clip bounds = (action_clip_lo/hi - mean)/std (p1/p99)
+  render_value: semantic/lang value = z + mean/std (= net/std, mean not subtracted); sign picks the direction word
+render:
+  fields:
+    actions_semantic: proprio clause (z-score) + '; ' + numerical action clause (net/std)
+    actions_semantic_no_proprio: numerical action clause only
+    actions_lang6: proprio clause + '; ' + lang6 action clause
+    actions_lang6_no_proprio: lang6 action clause only
+    actions_lang4: proprio clause + '; ' + lang4 action clause
+    actions_lang4_no_proprio: lang4 action clause only
+  numerical: none (no key=value z-score rendering in this build)
+  axis_grounding: 'image: +x = right (corr +0.95), +y = down (corr +0.90)'
+  note: the [wall] prefix is added by the training loader when domain_prefix is on. action_raw keeps the raw-unit
+    net action and proprio

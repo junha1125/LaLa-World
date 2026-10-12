@@ -1,0 +1,62 @@
+spec_version: 3
+dataset: pusht
+domain_prefix: '[pusht] '
+source_jsonl: jsonl/traj/pusht.jsonl
+record_layout: traj (one line per episode; n_records = number of stride-1 transitions)
+n_records: 2243311
+n_episodes: 18685
+purpose: shared normalization space for text rendering and planning (action chunk = 5-step net action, all stride-1
+  window starts)
+text_normalized: true
+net_window: 5
+action_dim: 2
+action_dims:
+- dx
+- dy
+units:
+  action: 5-step sum of the pusher target displacement in px (env interface uses px/100, action_scale = 100)
+  proprio: state[:2] = pusher x, y (px) + velocity vx, vy
+action_mean:
+- -4.194796
+- 3.309811
+action_std:
+- 94.039636
+- 93.52771
+action_clip_lo:
+- -242.992381
+- -234.068924
+action_clip_hi:
+- 258.807682
+- 229.607795
+proprio_dim: 4
+proprio_dims:
+- x
+- y
+- vx
+- vy
+proprio_mean:
+- 229.416707
+- 292.066547
+- -3.157109
+- 2.708279
+proprio_std:
+- 104.63901
+- 100.142067
+- 78.675102
+- 77.990961
+planning:
+  sample_space: z-score (action_mean/std) Gaussian samples, clipped in z space
+  clip: z-space clip bounds = (action_clip_lo/hi - mean)/std (p1/p99)
+  render_value: semantic/lang value = z + mean/std (= net/std, mean not subtracted); sign picks the direction word
+render:
+  fields:
+    actions_semantic: proprio clause (z-score) + '; ' + numerical action clause (net/std)
+    actions_semantic_no_proprio: numerical action clause only
+    actions_lang6: proprio clause + '; ' + lang6 action clause
+    actions_lang6_no_proprio: lang6 action clause only
+    actions_lang4: proprio clause + '; ' + lang4 action clause
+    actions_lang4_no_proprio: lang4 action clause only
+  numerical: none (no key=value z-score rendering in this build)
+  axis_grounding: 'image: +x = right (corr +0.86), +y = down (corr +0.84)'
+  note: the [pusht] prefix is added by the training loader when domain_prefix is on. action_raw keeps the raw-unit
+    net action and proprio

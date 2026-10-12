@@ -1,0 +1,199 @@
+spec_version: 1
+dataset: rope
+source_jsonl: jsonl/traj/rope.jsonl
+value_space: action_raw.net_action / action_std (rope_v1.yaml); the same value as the semantic text (mean not subtracted)
+side_rule: v >= 0 -> pos direction word, v < 0 -> neg (same as the semantic render)
+bin_rule: 'bin = #(abs_edges <= |v|) (bisect_right on the round-6 edges); counts are re-tallied with the same rule'
+edge_rule: 'per direction, np.quantile of |v| (6-bin: [1/3, 2/3], 4-bin: [0.5]), round-6'
+n_pairs: 19000
+purpose: training lang text and planning renders share the same bin edges and phrases
+builder: data_preparation/build_sim_traj.py
+dims:
+- key: sx
+  kind: move
+  pos_dir: right
+  neg_dir: left
+  zero_count: 0
+  neg_count: 9762
+  pos_count: 9238
+  bins6:
+    neg_abs_edges:
+    - 0.466645
+    - 1.108035
+    pos_abs_edges:
+    - 0.447381
+    - 1.050562
+    neg_counts:
+    - 3254
+    - 3254
+    - 3254
+    pos_counts:
+    - 3080
+    - 3079
+    - 3079
+    neg_phrases:
+    - slightly left
+    - left
+    - far left
+    pos_phrases:
+    - slightly right
+    - right
+    - far right
+  bins4:
+    neg_abs_edges:
+    - 0.776141
+    pos_abs_edges:
+    - 0.730885
+    neg_counts:
+    - 4881
+    - 4881
+    pos_counts:
+    - 4619
+    - 4619
+    neg_phrases:
+    - slightly left
+    - far left
+    pos_phrases:
+    - slightly right
+    - far right
+- key: sy
+  kind: move
+  pos_dir: below
+  neg_dir: above
+  zero_count: 0
+  neg_count: 9651
+  pos_count: 9349
+  bins6:
+    neg_abs_edges:
+    - 0.466441
+    - 1.108516
+    pos_abs_edges:
+    - 0.426148
+    - 1.042054
+    neg_counts:
+    - 3217
+    - 3217
+    - 3217
+    pos_counts:
+    - 3117
+    - 3116
+    - 3116
+    neg_phrases:
+    - slightly above
+    - above
+    - far above
+    pos_phrases:
+    - slightly below
+    - below
+    - far below
+  bins4:
+    neg_abs_edges:
+    - 0.766455
+    pos_abs_edges:
+    - 0.699412
+    neg_counts:
+    - 4825
+    - 4826
+    pos_counts:
+    - 4674
+    - 4675
+    neg_phrases:
+    - slightly above
+    - far above
+    pos_phrases:
+    - slightly below
+    - far below
+- key: dx
+  kind: move
+  pos_dir: right
+  neg_dir: left
+  zero_count: 0
+  neg_count: 9273
+  pos_count: 9727
+  bins6:
+    neg_abs_edges:
+    - 0.475169
+    - 1.06912
+    pos_abs_edges:
+    - 0.484294
+    - 1.102513
+    neg_counts:
+    - 3091
+    - 3091
+    - 3091
+    pos_counts:
+    - 3243
+    - 3242
+    - 3242
+    neg_phrases:
+    - slightly left
+    - left
+    - far left
+    pos_phrases:
+    - slightly right
+    - right
+    - far right
+  bins4:
+    neg_abs_edges:
+    - 0.752582
+    pos_abs_edges:
+    - 0.781127
+    neg_counts:
+    - 4636
+    - 4637
+    pos_counts:
+    - 4864
+    - 4863
+    neg_phrases:
+    - slightly left
+    - far left
+    pos_phrases:
+    - slightly right
+    - far right
+- key: dy
+  kind: move
+  pos_dir: down
+  neg_dir: up
+  zero_count: 0
+  neg_count: 9401
+  pos_count: 9599
+  bins6:
+    neg_abs_edges:
+    - 0.459039
+    - 1.047776
+    pos_abs_edges:
+    - 0.492096
+    - 1.109641
+    neg_counts:
+    - 3134
+    - 3133
+    - 3134
+    pos_counts:
+    - 3200
+    - 3199
+    - 3200
+    neg_phrases:
+    - slightly up
+    - up
+    - far up
+    pos_phrases:
+    - slightly down
+    - down
+    - far down
+  bins4:
+    neg_abs_edges:
+    - 0.729591
+    pos_abs_edges:
+    - 0.786027
+    neg_counts:
+    - 4700
+    - 4701
+    pos_counts:
+    - 4800
+    - 4799
+    neg_phrases:
+    - slightly up
+    - far up
+    pos_phrases:
+    - slightly down
+    - far down

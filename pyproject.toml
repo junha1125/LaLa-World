@@ -1,0 +1,81 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lala-world"
+version = "1.0.0"
+description = "LaLa-World: Scaling Latent World Models with Natural Language Actions"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+dependencies = [
+    "torch",
+    "torchvision",
+    "numpy",
+    "pillow",
+    "pyyaml",
+    "ruamel.yaml",
+    "omegaconf",
+    "transformers>=5.5",
+    "accelerate",
+    "sentencepiece",
+    "safetensors",
+    "flash-linear-attention==0.5.2",
+    "huggingface_hub",
+    "einops",
+    "timm",
+    "h5py",
+    "pandas",
+    "pyarrow",
+    "scipy",
+    "opencv-python-headless",
+    "psutil",
+    "tqdm",
+    "wandb",
+]
+
+[project.optional-dependencies]
+# simulators for LaLa-World planning (Wall / PointMaze / Push-T / Meta-World); rope and granular need PyFleX (see README)
+sim = [
+    "mujoco",
+    "gymnasium>=1.2",
+    "gym",
+    "pygame",
+    "pymunk<7",
+    "shapely",
+    "scikit-image",
+    "matplotlib",
+    "imageio",
+    "imageio-ffmpeg",
+    "tensordict",
+    "nevergrad",
+    "pybullet",
+    "beautifulsoup4",
+    "metaworld @ git+https://github.com/Farama-Foundation/Metaworld.git@6e01ad7e2ffb2302e4dca04f796fcd8837df8540",
+]
+# dataset builders (data_preparation/)
+data = [
+    "imageio",
+    "imageio-ffmpeg",
+    "decord",
+    "requests",
+    "openai",
+]
+# pixel decoder (decoder/)
+decoder = ["lpips"]
+dev = ["pytest", "black", "isort", "flake8"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*", "evals*", "src*"]
+
+[tool.black]
+line-length = 119
+
+[tool.isort]
+profile = "black"
+line_length = 119
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

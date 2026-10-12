@@ -1,0 +1,84 @@
+spec_version: 3
+dataset: granular
+domain_prefix: '[granular] '
+source_jsonl: jsonl/traj/granular.jsonl
+record_layout: traj (one line per episode; n_records = number of stride-1 transitions)
+n_records: 19000
+n_episodes: 1000
+purpose: shared normalization space for text rendering and planning (action chunk = 1-step net action, all stride-1
+  window starts)
+text_normalized: true
+net_window: 1
+action_dim: 4
+action_dims:
+- sx
+- sy
+- dx
+- dy
+units:
+  action: 'one push macro. Raw action [x_start, y_start, x_end, y_end] (pybullet plane, y = -FleX z; start in [-4,
+    4]^2, end in [-1.5, 1.5]^2) rotated by R = [[-1, 1], [1, 1]]/sqrt(2) (self-inverse) into start + delta: [sx,
+    sy] = start@R, [dx, dy] = (end - start)@R. No summation (window = 1). Execution: start = [sx, sy]@R, end = [sx
+    + dx, sy + dy]@R'
+  proprio: none (the arm returns to rest after each push)
+action_mean:
+- 0.049719
+- -0.027339
+- -0.053423
+- 0.031764
+action_std:
+- 2.588003
+- 2.586113
+- 2.971715
+- 2.973863
+action_clip_lo:
+- -5.033389
+- -5.050307
+- -5.821893
+- -5.862433
+action_clip_hi:
+- 5.061336
+- 5.028465
+- 5.848601
+- 5.890358
+proprio_dim: 0
+proprio_dims: []
+proprio_mean: []
+proprio_std: []
+planning:
+  sample_space: z-score (action_mean/std) Gaussian samples, clipped in z space
+  clip: z-space clip bounds = (action_clip_lo/hi - mean)/std (p1/p99)
+  render_value: semantic/lang value = z + mean/std (= net/std, mean not subtracted); sign picks the direction word
+render:
+  fields:
+    actions_semantic: numerical action clause only (no proprio; identical to the no_proprio field)
+    actions_semantic_no_proprio: numerical action clause only
+    actions_lang6: lang6 action clause only (identical to no_proprio)
+    actions_lang6_no_proprio: lang6 action clause only
+    actions_lang4: lang4 action clause only (identical to no_proprio)
+    actions_lang4_no_proprio: lang4 action clause only
+  numerical: none (no key=value z-score rendering in this build)
+  axis_grounding: 'image (45-degree corner camera, after rotation): +sx = right corr(sx, col) = +0.98, +sy = down
+    corr(sy, row) = +0.97'
+  note: the [granular] prefix is added by the training loader when domain_prefix is on. action_raw keeps the raw-unit
+    net action and proprio
+plan_space:
+  dims:
+  - sx
+  - sy
+  - x_end
+  - y_end
+  mean:
+  - 0.048818
+  - -0.027282
+  - 0.004984
+  - 0.00247
+  std:
+  - 2.587785
+  - 2.584953
+  - 0.827725
+  - 0.846853
+  end_box: 1.5
+  note: 'CEM variables u = [sx, sy, x_end, y_end] (start: screen-aligned rotated coordinates = text, end: raw plane
+    coordinates, collection box |end| <= 1.5). Before rendering, delta = (end - start@R)@R joins the text net [sx,
+    sy, dx, dy] (sim_spec.DeformSpec.plan_to_z).'

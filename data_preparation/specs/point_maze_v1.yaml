@@ -1,0 +1,62 @@
+spec_version: 3
+dataset: point_maze
+domain_prefix: '[point_maze] '
+source_jsonl: jsonl/traj/point_maze.jsonl
+record_layout: traj (one line per episode; n_records = number of stride-1 transitions)
+n_records: 190000
+n_episodes: 2000
+purpose: shared normalization space for text rendering and planning (action chunk = 5-step net action, all stride-1
+  window starts)
+text_normalized: true
+net_window: 5
+action_dim: 2
+action_dims:
+- fx
+- fy
+units:
+  action: 5-step sum of the per-step force (impulse approximation)
+  proprio: state = x, y, vx, vy (simulator units)
+action_mean:
+- -0.000223
+- 0.003863
+action_std:
+- 1.290378
+- 1.295299
+action_clip_lo:
+- -2.921412
+- -2.920265
+action_clip_hi:
+- 2.921418
+- 2.946633
+proprio_dim: 4
+proprio_dims:
+- x
+- y
+- vx
+- vy
+proprio_mean:
+- 1.813814
+- 1.939819
+- -0.007123
+- -0.021206
+proprio_std:
+- 1.005161
+- 0.963061
+- 1.684087
+- 1.935029
+planning:
+  sample_space: z-score (action_mean/std) Gaussian samples, clipped in z space
+  clip: z-space clip bounds = (action_clip_lo/hi - mean)/std (p1/p99)
+  render_value: semantic/lang value = z + mean/std (= net/std, mean not subtracted); sign picks the direction word
+render:
+  fields:
+    actions_semantic: proprio clause (z-score) + '; ' + numerical action clause (net/std)
+    actions_semantic_no_proprio: numerical action clause only
+    actions_lang6: proprio clause + '; ' + lang6 action clause
+    actions_lang6_no_proprio: lang6 action clause only
+    actions_lang4: proprio clause + '; ' + lang4 action clause
+    actions_lang4_no_proprio: lang4 action clause only
+  numerical: none (no key=value z-score rendering in this build)
+  axis_grounding: 'image: +x = right (corr +1.00), +y = down (corr +1.00)'
+  note: the [point_maze] prefix is added by the training loader when domain_prefix is on. action_raw keeps the raw-unit
+    net action and proprio

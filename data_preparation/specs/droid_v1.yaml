@@ -1,0 +1,97 @@
+spec_version: 3
+dataset: droid
+domain_prefix: '[droid] '
+source_jsonl: jsonl/traj/droid.jsonl
+record_layout: traj (one line per episode; n_records = number of 4 fps grid transitions)
+n_records: 6847845
+n_episodes: 95561
+purpose: shared normalization space for text rendering and planning (action = one grid-step EE delta, window=1)
+text_normalized: false
+net_window: 1
+frame_grid:
+  native_fps: 15
+  step: 4
+  dt_sec: 0.266667
+  note: 'frames/<ep>/<t:06d>.jpg: t = grid index, native index = step*t. Camera observation.images.exterior_1_left
+    (fixed external camera, placement differs per scene; direction words are in the robot base frame)'
+action_dim: 6
+action_dims:
+- dx
+- dy
+- dz
+- droll
+- dpitch
+- dyaw
+units:
+  action: 'one grid-step EE delta: dxyz in m (difference), deuler in rad (relative rotation euler(R_g@R_c^T)), raw
+    SI units. net_action[6] = dgrip (gripper opening delta, + = closing)'
+  proprio: none (absolute EE pose stays in the source parquet)
+action_mean:
+- 0.002048
+- 2.5e-05
+- -0.001756
+- 4.7e-05
+- -0.001499
+- -0.000695
+action_std:
+- 0.014384
+- 0.01856
+- 0.01995
+- 0.040761
+- 0.045133
+- 0.059128
+action_clip_lo:
+- -0.041289
+- -0.058656
+- -0.056065
+- -0.130999
+- -0.14431
+- -0.189286
+action_clip_hi:
+- 0.047246
+- 0.05855
+- 0.06166
+- 0.132821
+- 0.131799
+- 0.189524
+proprio_dim: 0
+proprio_dims: []
+proprio_mean: []
+proprio_std: []
+gripper:
+  kind: discrete3
+  raw_field: net_action[6] (dgrip)
+  rule:
+    close: dgrip > 0.1
+    open: dgrip < -0.1
+    hold: otherwise
+  train_freq:
+    close: 0.0618
+    open: 0.0578
+    hold: 0.8804
+  zero_frac: 0.8115
+  mean: 0.001285
+  std: 0.088073
+  clip_lo: -0.299559
+  clip_hi: 0.30837
+  note: dominated by exact zeros, so it is not a Gaussian continuous dimension; planning treats it as a 3-way discrete
+    choice
+planning:
+  sample_space: continuous 6-D z-score (action_mean/std) Gaussian samples, clipped in z space; gripper separate
+    (see gripper)
+  clip: z-space clip bounds = (action_clip_lo/hi - mean)/std (p1/p99)
+  render_value: semantic text uses the physical-unit net (= z*std+mean); lang text bins |net/std|
+render:
+  fields:
+    actions_semantic: physical-unit action clause only (no proprio; identical to the no_proprio field)
+    actions_semantic_no_proprio: physical-unit action clause only
+    actions_lang6: lang6 action clause only (identical to no_proprio)
+    actions_lang6_no_proprio: lang6 action clause only
+    actions_lang4: lang4 action clause only (identical to no_proprio)
+    actions_lang4_no_proprio: lang4 action clause only
+  semantic_template: move gripper {|dx|cm} forward|backward, {|dy|cm} left|right, {|dz|cm} up|down; rotate roll
+    {deg:+d}deg, pitch {deg:+d}deg, yaw {deg:+d}deg; close|open|hold gripper
+  numerical: none
+  axis_grounding: 'robot base frame: +x = forward, +y = left, +z = up'
+  note: the [droid] prefix is added by the training loader when domain_prefix is on. action_raw.net_action keeps
+    the round-6 raw 7-D action; rendering and binning use the same rounded values

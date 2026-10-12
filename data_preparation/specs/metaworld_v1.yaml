@@ -1,0 +1,72 @@
+spec_version: 3
+dataset: metaworld
+domain_prefix: '[metaworld] '
+source_jsonl: jsonl/traj/metaworld.jsonl
+record_layout: traj (one line per episode; n_records = number of stride-1 transitions)
+n_records: 1184400
+n_episodes: 12600
+purpose: shared normalization space for text rendering and planning (action chunk = 5-step net action, all stride-1
+  window starts)
+text_normalized: true
+net_window: 5
+action_dim: 4
+action_dims:
+- dx
+- dy
+- dz
+- dgrip
+units:
+  action: 5-step sum of per-step EE delta commands (raw range [-1, 1], simulator units); dgrip > 0 = close
+  proprio: state[:4] = EE xyz + gripper openness (0 = closed), simulator units
+action_mean:
+- 0.007213
+- 0.768282
+- -0.678605
+- 1.010823
+action_std:
+- 2.751929
+- 2.886987
+- 2.693311
+- 3.012928
+action_clip_lo:
+- -4.863607
+- -4.794962
+- -4.882913
+- -4.766663
+action_clip_hi:
+- 4.879188
+- 4.923689
+- 4.810625
+- 4.921899
+proprio_dim: 4
+proprio_dims:
+- x
+- y
+- z
+- grip
+proprio_mean:
+- -0.002941
+- 0.652598
+- 0.154128
+- 0.643593
+proprio_std:
+- 0.103074
+- 0.111409
+- 0.079547
+- 0.261661
+planning:
+  sample_space: z-score (action_mean/std) Gaussian samples, clipped in z space
+  clip: z-space clip bounds = (action_clip_lo/hi - mean)/std (p1/p99)
+  render_value: semantic/lang value = z + mean/std (= net/std, mean not subtracted); sign picks the direction word
+render:
+  fields:
+    actions_semantic: proprio clause (z-score) + '; ' + numerical action clause (net/std)
+    actions_semantic_no_proprio: numerical action clause only
+    actions_lang6: proprio clause + '; ' + lang6 action clause
+    actions_lang6_no_proprio: lang6 action clause only
+    actions_lang4: proprio clause + '; ' + lang4 action clause
+    actions_lang4_no_proprio: lang4 action clause only
+  numerical: none (no key=value z-score rendering in this build)
+  axis_grounding: 'robot frame: +x = right, +y = forward (away from the robot), +z = up (not screen directions)'
+  note: the [metaworld] prefix is added by the training loader when domain_prefix is on. action_raw keeps the raw-unit
+    net action and proprio

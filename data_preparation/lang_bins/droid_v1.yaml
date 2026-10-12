@@ -1,0 +1,294 @@
+spec_version: 1
+dataset: droid
+source_jsonl: jsonl/traj/droid.jsonl
+value_space: action_raw.net_action[:6] / action_std (droid_v1.yaml); unitless, mean not subtracted
+side_rule: v >= 0 -> pos direction word, v < 0 -> neg
+bin_rule: 'bin = #(abs_edges <= |v|) (bisect_right on the round-6 edges); counts are re-tallied with the same rule'
+edge_rule: 'per direction, np.quantile of |v| (6-bin: [1/3, 2/3], 4-bin: [0.5]), round-6'
+gripper: no bins; the discrete 3-way close|open|hold word fills '..., then {word} the gripper'
+n_pairs: 6847845
+purpose: training lang text and planning renders share the same bin edges and phrases
+builder: data_preparation/droid/build_droid_traj.py
+dims:
+- key: dx
+  kind: move
+  pos_dir: forward
+  neg_dir: backward
+  zero_count: 92117
+  neg_count: 2676985
+  pos_count: 4170860
+  bins6:
+    neg_abs_edges:
+    - 0.139182
+    - 0.616866
+    pos_abs_edges:
+    - 0.160387
+    - 0.630214
+    neg_counts:
+    - 892150
+    - 892560
+    - 892275
+    pos_counts:
+    - 1390438
+    - 1390027
+    - 1390395
+    neg_phrases:
+    - slightly backward
+    - backward
+    - far backward
+    pos_phrases:
+    - slightly forward
+    - forward
+    - far forward
+  bins4:
+    neg_abs_edges:
+    - 0.31243
+    pos_abs_edges:
+    - 0.338014
+    neg_counts:
+    - 1338469
+    - 1338516
+    pos_counts:
+    - 2085227
+    - 2085633
+    neg_phrases:
+    - slightly backward
+    - far backward
+    pos_phrases:
+    - slightly forward
+    - far forward
+- key: dy
+  kind: move
+  pos_dir: left
+  neg_dir: right
+  zero_count: 70188
+  neg_count: 3371516
+  pos_count: 3476329
+  bins6:
+    neg_abs_edges:
+    - 0.128287
+    - 0.555496
+    pos_abs_edges:
+    - 0.118481
+    - 0.540248
+    neg_counts:
+    - 1123978
+    - 1123714
+    - 1123824
+    pos_counts:
+    - 1159006
+    - 1158578
+    - 1158745
+    neg_phrases:
+    - slightly right
+    - right
+    - far right
+    pos_phrases:
+    - slightly left
+    - left
+    - far left
+  bins4:
+    neg_abs_edges:
+    - 0.282058
+    pos_abs_edges:
+    - 0.271067
+    neg_counts:
+    - 1685621
+    - 1685895
+    pos_counts:
+    - 1738226
+    - 1738103
+    neg_phrases:
+    - slightly right
+    - far right
+    pos_phrases:
+    - slightly left
+    - far left
+- key: dz
+  kind: move
+  pos_dir: up
+  neg_dir: down
+  zero_count: 60450
+  neg_count: 3934463
+  pos_count: 2913382
+  bins6:
+    neg_abs_edges:
+    - 0.195138
+    - 0.698396
+    pos_abs_edges:
+    - 0.115088
+    - 0.657393
+    neg_counts:
+    - 1311673
+    - 1311365
+    - 1311425
+    pos_counts:
+    - 971291
+    - 970931
+    - 971160
+    neg_phrases:
+    - slightly down
+    - down
+    - far down
+    pos_phrases:
+    - slightly up
+    - up
+    - far up
+  bins4:
+    neg_abs_edges:
+    - 0.398997
+    pos_abs_edges:
+    - 0.297243
+    neg_counts:
+    - 1967101
+    - 1967362
+    pos_counts:
+    - 1456672
+    - 1456710
+    neg_phrases:
+    - slightly down
+    - far down
+    pos_phrases:
+    - slightly up
+    - far up
+- key: droll
+  kind: rot
+  pos_dir: roll right
+  neg_dir: roll left
+  zero_count: 53239
+  neg_count: 3449935
+  pos_count: 3397910
+  bins6:
+    neg_abs_edges:
+    - 0.122519
+    - 0.542602
+    pos_abs_edges:
+    - 0.118667
+    - 0.553666
+    neg_counts:
+    - 1149923
+    - 1150042
+    - 1149970
+    pos_counts:
+    - 1132542
+    - 1132704
+    - 1132664
+    neg_phrases:
+    - slightly roll left
+    - roll left
+    - sharply roll left
+    pos_phrases:
+    - slightly roll right
+    - roll right
+    - sharply roll right
+  bins4:
+    neg_abs_edges:
+    - 0.275876
+    pos_abs_edges:
+    - 0.275901
+    neg_counts:
+    - 1724950
+    - 1724985
+    pos_counts:
+    - 1698999
+    - 1698911
+    neg_phrases:
+    - slightly roll left
+    - sharply roll left
+    pos_phrases:
+    - slightly roll right
+    - sharply roll right
+- key: dpitch
+  kind: rot
+  pos_dir: pitch down
+  neg_dir: pitch up
+  zero_count: 40012
+  neg_count: 3416644
+  pos_count: 3431201
+  bins6:
+    neg_abs_edges:
+    - 0.178007
+    - 0.685795
+    pos_abs_edges:
+    - 0.169078
+    - 0.606696
+    neg_counts:
+    - 1138878
+    - 1138861
+    - 1138905
+    pos_counts:
+    - 1143732
+    - 1143750
+    - 1143719
+    neg_phrases:
+    - slightly pitch up
+    - pitch up
+    - sharply pitch up
+    pos_phrases:
+    - slightly pitch down
+    - pitch down
+    - sharply pitch down
+  bins4:
+    neg_abs_edges:
+    - 0.373142
+    pos_abs_edges:
+    - 0.340859
+    neg_counts:
+    - 1708339
+    - 1708305
+    pos_counts:
+    - 1715579
+    - 1715622
+    neg_phrases:
+    - slightly pitch up
+    - sharply pitch up
+    pos_phrases:
+    - slightly pitch down
+    - sharply pitch down
+- key: dyaw
+  kind: rot
+  pos_dir: turn left
+  neg_dir: turn right
+  zero_count: 41316
+  neg_count: 3440520
+  pos_count: 3407325
+  bins6:
+    neg_abs_edges:
+    - 0.143807
+    - 0.609305
+    pos_abs_edges:
+    - 0.127334
+    - 0.580368
+    neg_counts:
+    - 1146899
+    - 1146773
+    - 1146848
+    pos_counts:
+    - 1135819
+    - 1135701
+    - 1135805
+    neg_phrases:
+    - slightly turn right
+    - turn right
+    - sharply turn right
+    pos_phrases:
+    - slightly turn left
+    - turn left
+    - sharply turn left
+  bins4:
+    neg_abs_edges:
+    - 0.315468
+    pos_abs_edges:
+    - 0.291199
+    neg_counts:
+    - 1720225
+    - 1720295
+    pos_counts:
+    - 1703700
+    - 1703625
+    neg_phrases:
+    - slightly turn right
+    - sharply turn right
+    pos_phrases:
+    - slightly turn left
+    - sharply turn left

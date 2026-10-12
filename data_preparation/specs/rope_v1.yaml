@@ -1,0 +1,84 @@
+spec_version: 3
+dataset: rope
+domain_prefix: '[rope] '
+source_jsonl: jsonl/traj/rope.jsonl
+record_layout: traj (one line per episode; n_records = number of stride-1 transitions)
+n_records: 19000
+n_episodes: 1000
+purpose: shared normalization space for text rendering and planning (action chunk = 1-step net action, all stride-1
+  window starts)
+text_normalized: true
+net_window: 1
+action_dim: 4
+action_dims:
+- sx
+- sy
+- dx
+- dy
+units:
+  action: 'one push macro. Raw action [x_start, y_start, x_end, y_end] (pybullet plane, y = -FleX z; start in [-4,
+    4]^2, end in [-1.5, 1.5]^2) rotated by R = [[-1, 1], [1, 1]]/sqrt(2) (self-inverse) into start + delta: [sx,
+    sy] = start@R, [dx, dy] = (end - start)@R. No summation (window = 1). Execution: start = [sx, sy]@R, end = [sx
+    + dx, sy + dy]@R'
+  proprio: none (the arm returns to rest after each push)
+action_mean:
+- -0.097522
+- -0.085371
+- 0.080412
+- 0.071442
+action_std:
+- 2.52166
+- 2.496895
+- 2.962537
+- 2.939709
+action_clip_lo:
+- -5.026839
+- -5.032713
+- -5.860944
+- -5.907689
+action_clip_hi:
+- 4.996412
+- 5.00416
+- 5.872522
+- 5.913459
+proprio_dim: 0
+proprio_dims: []
+proprio_mean: []
+proprio_std: []
+planning:
+  sample_space: z-score (action_mean/std) Gaussian samples, clipped in z space
+  clip: z-space clip bounds = (action_clip_lo/hi - mean)/std (p1/p99)
+  render_value: semantic/lang value = z + mean/std (= net/std, mean not subtracted); sign picks the direction word
+render:
+  fields:
+    actions_semantic: numerical action clause only (no proprio; identical to the no_proprio field)
+    actions_semantic_no_proprio: numerical action clause only
+    actions_lang6: lang6 action clause only (identical to no_proprio)
+    actions_lang6_no_proprio: lang6 action clause only
+    actions_lang4: lang4 action clause only (identical to no_proprio)
+    actions_lang4_no_proprio: lang4 action clause only
+  numerical: none (no key=value z-score rendering in this build)
+  axis_grounding: 'image (45-degree corner camera, after rotation): +sx = right corr(sx, col) = +0.99, +sy = down
+    corr(sy, row) = +0.99'
+  note: the [rope] prefix is added by the training loader when domain_prefix is on. action_raw keeps the raw-unit
+    net action and proprio
+plan_space:
+  dims:
+  - sx
+  - sy
+  - x_end
+  - y_end
+  mean:
+  - -0.095264
+  - -0.077356
+  - -0.002363
+  - -0.021763
+  std:
+  - 2.519688
+  - 2.499555
+  - 0.858883
+  - 0.843841
+  end_box: 1.5
+  note: 'CEM variables u = [sx, sy, x_end, y_end] (start: screen-aligned rotated coordinates = text, end: raw plane
+    coordinates, collection box |end| <= 1.5). Before rendering, delta = (end - start@R)@R joins the text net [sx,
+    sy, dx, dy] (sim_spec.DeformSpec.plan_to_z).'
