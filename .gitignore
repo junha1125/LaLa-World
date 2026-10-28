@@ -24,7 +24,7 @@ MUJOCO_LOG.TXT
 # upstream checkout kept for reference
 jepa-wms-origin-removed-before-push/
 
-# not yet released: remove an entry when its code is published
+# internal tools, not part of the release
 scripts/export_checkpoint.py
 
 # local notes and drafts
