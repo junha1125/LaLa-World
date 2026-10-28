@@ -209,7 +209,7 @@ bash evals/lala_policy/run_robocasa_all.sh checkpoints/lala-policy-robocasa50.pt
 
 Direct policy rollouts with the Cosmos Policy protocol, one process per task inside the simulator venvs from
 [Installation](#installation); each script ends with `evals.lala_policy.collect` (`logs/policy_eval/summary.md`,
-Wilson 95% CIs). Single tasks, flow steps and decoding the imagined frames:
+Wilson 95% CIs). Single tasks and decoding the imagined frames:
 [`evals/lala_policy/README.md`](evals/lala_policy/README.md).
 
 ### Checkpoints

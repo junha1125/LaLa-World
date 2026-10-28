@@ -25,8 +25,7 @@ Results: `<out>/libero/<tag>/<suite>/task<k>.json`, `<out>/robocasa/<tag>/<task>
 default `logs/policy_eval`), written after every episode; finished tasks are skipped on rerun (`--overwrite`). The first
 two episodes of each task are saved as GIFs. The simulators render with Mesa / EGL on the CPU, so run many processes.
 
-- `LALA_POLICY_EVAL_EXTRA="--flow-steps N"` overrides the Euler steps of the flow head (default: the value stored in
-  the checkpoint); `--seed` is the sampling seed.
+- `--seed` is the sampling seed.
 - `--save-imagine N --decoder-ckpt <decoder>` compares every query's imagined frame at t + K (policy pass and
   world-model pass on the sampled chunk) with the frame the simulator reaches; `imagine_viz.py --out <root>` aggregates.
 - `--video-res 512` writes an MP4 of every step for the episodes that get a GIF.
