@@ -2,13 +2,13 @@
 
 <p align="center">
   <a href="https://june-page.github.io/lala-world/"><img alt="Project page" src="https://img.shields.io/badge/Project%20page-lala--world-blue"></a>
-  <img alt="arXiv" src="https://img.shields.io/badge/arXiv-coming%20soon-b5212f?logo=arxiv">
-  <img alt="Checkpoints" src="https://img.shields.io/badge/🤗%20Checkpoints-coming%20soon-ffc107">
+  <a href="https://huggingface.co/LaLa-World"><img alt="Hugging Face" src="https://img.shields.io/badge/🤗%20Hugging%20Face-LaLa--World-ffc107"></a>
 </p>
 
 <p align="center">
-  Junha Song<sup>1</sup>, Geonmo Gu<sup>1</sup>, Jeongeun Park<sup>2</sup>, Heejeong Nam<sup>3</sup>, Lucas Maes<sup>4</sup>,<br>
-  Byeongho Heo<sup>1</sup>, Dongyoon Han<sup>1</sup>, Sangdoo Yun<sup>1</sup>
+  <a href="https://arxiv.org/abs/2610.27851"><img alt="arXiv" src="https://img.shields.io/badge/arXiv-2610.27851-b5212f?logo=arxiv"></a>
+  <a href="https://www.alphaxiv.org/abs/2610.27851"><img alt="alphaXiv" src="https://img.shields.io/badge/alphaXiv-2610.27851-7b61ff"></a>
+  <a href="https://huggingface.co/papers/2610.27851"><img alt="Hugging Face Papers" src="https://img.shields.io/badge/🤗%20Papers-2610.27851-ffc107"></a>
 </p>
 
 <p align="center">
@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  <sup>1</sup>NAVER AI Lab &nbsp; <sup>2</sup>Georgia Institute of Technology &nbsp; <sup>3</sup>Brown University &nbsp; <sup>4</sup>Mila &amp; Université de Montréal
+  <img src="https://raw.githubusercontent.com/junha1125/Imgaes_For_GitBlog/master/google_blogger/LaLa-World_20s.gif" alt="LaLa-World teaser" width="800">
 </p>
 
 **LaLa-World** is a **La**nguage-conditioned **La**tent **World** model that uses natural language as a shared action
@@ -33,8 +33,6 @@ future representations.
   13.9× faster planning.
 - LaLa-Policy is competitive with Cosmos Policy on LIBERO and RoboCasa with up to 5.5× faster inference.
 
-<!-- teaser: add assets/teaser.png here -->
-
 ## Contents
 
 - [Installation](#installation)
@@ -47,10 +45,6 @@ future representations.
 - [Citation](#citation)
 - [Acknowledgements](#acknowledgements)
 - [License](#license)
-
-> **(October 2026).** This repository is being populated. Environment setup, data preparation, the training and
-> evaluation code, the LaLa-Policy checkpoints and the decoders are available now; the pretrained LaLa-World checkpoints
-> will follow shortly.
 
 ## Installation
 
@@ -97,12 +91,6 @@ sizes and the output layout are in [`data_preparation/README.md`](data_preparati
 
 ## LaLa-World
 
-The world model: a frozen vision encoder, a Qwen3.5-0.8B predictor (24 layers) and a text interface for actions.
-Numerical actions are rendered into text with the normalization specs in `data_preparation/specs/` and
-`data_preparation/lang_bins/`, and the same predictor consumes the change captions and edit instructions of the image
-and video data. Planning is MPC with CEM in latent space: candidate action chunks are written in the training text
-format, rolled out by the predictor and scored against the encoded goal. Setup: [Installation](#installation).
-
 ### Data
 
 ```bash
@@ -134,11 +122,8 @@ python -m app.main --fname configs/lala_world/base.yaml --devices cuda:0 cuda:1 
 | `dinov3_l.yaml` | DINOv3-L/16 | Qwen3.5-0.8B, 24 layers |
 | `siglip2_so400m.yaml` | SigLIP2-So400M/14 | Qwen3.5-0.8B, 24 layers |
 
-All three use up to 3 context frames and the same data: 7 control datasets (DROID capped at 1.5M) + OpenVid + OmniEdit +
-ShareGPT; `siglip2_so400m.yaml` is the LaLa-Policy initialization. One process per GPU, 20 epochs x 1M samples at
-global batch 512 (`batch_size x #GPUs x grad_accum_steps`), about 2 days on 8 x H100. Outputs land in `folder/` (`train.csv`, `val.jsonl`, `lala-e<epoch>.pth.tar`); `meta.quick_debug: true`
-turns any config into a 4-step smoke run. Validation logs the prediction loss per source group, the same loss with
-the action text blanked, and `rel_l2` (error relative to copying the last frame).
+One process per GPU, 20 epochs x 1M samples at global batch 512 (`batch_size x #GPUs x grad_accum_steps`), about
+2 days on 8 x H100.
 
 ### Planning evaluation
 
@@ -154,8 +139,7 @@ bash evals/lala_world/driver_robocasa.sh $CK reach 0 plan 32                    
 
 MPC with CEM in latent space on Wall, PointMaze, Push-T, Meta-World (reach, reach-wall), Rope and Granular, an
 offline action score on DROID, and zero-shot reach / place in RoboCasa; results go to `logs/planning/<env>/<tag>/result.json`.
-The DROID and RoboCasa episodes are the hold-out sets released with [JEPA-WMs](https://github.com/facebookresearch/jepa-wms)
-(`prepare_data.sh eval`). Per-benchmark settings, sharding over GPUs and decoding the imagined futures:
+Per-benchmark settings, sharding over GPUs and decoding the imagined futures:
 [`evals/lala_world/README.md`](evals/lala_world/README.md).
 
 ### Checkpoints
@@ -167,12 +151,6 @@ The DROID and RoboCasa episodes are the hold-out sets released with [JEPA-WMs](h
 | LaLa-World (SigLIP2-So400M/14) | SigLIP2 So400M/14 | Qwen3.5-0.8B, 24 layers | coming soon |
 
 ## LaLa-Policy
-
-The policy: the pretrained LaLa-World (SigLIP2-So400M/14 encoder, 24-layer Qwen3.5 predictor) fine-tuned to jointly
-predict the action chunk and the future visual representation. Actions come from a flow-matching action head (the
-DiT of [Isaac-GR00T](https://github.com/NVIDIA/Isaac-GR00T)); the world-model pretraining is the initialization, with
-language-model-only and random initialization as controls. It is evaluated with the Cosmos Policy protocol on LIBERO
-and RoboCasa. Setup: [Installation](#installation).
 
 ### Data
 
@@ -198,9 +176,7 @@ python -m app.main --fname configs/lala_policy/base.yaml --devices cuda:0 cuda:1
 | `robocasa.yaml` | RoboCasa, 24 tasks, about 50 human demos per task | left + right + wrist | 32 | 12 |
 | `robocasa_mg300.yaml` | RoboCasa, 300 MimicGen demos per task | left + right + wrist | 32 | 3 |
 
-`meta.init_from` is the SigLIP2-So400M/14 LaLa-World checkpoint (`null` = no world-model pretraining;
-`model.llm.pretrained: false` on top = random initialization). Global batch 256; about 5 hours for LIBERO and
-14 hours for RoboCasa on 8 x H100.
+Global batch 256; about 5 hours for LIBERO and 14 hours for RoboCasa on 8 x H100.
 
 ### Evaluation
 
@@ -209,9 +185,7 @@ bash evals/lala_policy/run_libero_all.sh checkpoints/lala-policy-libero.pth.tar 
 bash evals/lala_policy/run_robocasa_all.sh checkpoints/lala-policy-robocasa50.pth.tar lala-policy-robocasa 50 12  # 24 tasks x 50 episodes on the 5 held-out scenes
 ```
 
-Direct policy rollouts with the Cosmos Policy protocol, one process per task inside the simulator venvs from
-[Installation](#installation); each script ends with `evals.lala_policy.collect` (`logs/policy_eval/summary.md`,
-Wilson 95% CIs). Single tasks and decoding the imagined frames:
+Decoding the imagined frames:
 [`evals/lala_policy/README.md`](evals/lala_policy/README.md).
 
 ### Checkpoints
@@ -222,13 +196,9 @@ Wilson 95% CIs). Single tasks and decoding the imagined frames:
 | LaLa-Policy (RoboCasa) | RoboCasa, 24 tasks, about 50 human demos per task | [lala-policy-robocasa50](https://huggingface.co/LaLa-World/lala-policy-robocasa50) |
 | LaLa-Policy (RoboCasa, MimicGen) | RoboCasa, 300 MimicGen demos per task | [lala-policy-robocasa300](https://huggingface.co/LaLa-World/lala-policy-robocasa300) |
 
-`hf download LaLa-World/lala-policy-libero lala-policy-libero.pth.tar --local-dir checkpoints` puts a checkpoint where the
-commands above expect it.
-
 ## Decoder
 
-A 12-layer ViT decoder per vision encoder maps patch latents, including the futures LaLa-World imagines, back to
-pixels (L1 + LPIPS, RAEv2's decoder recipe). It is used only for visualization. Pretrained decoders:
+Used only for visualization. Pretrained decoders:
 [lala-decoder-dinov2-s](https://huggingface.co/LaLa-World/lala-decoder-dinov2-s),
 [lala-decoder-dinov3-l](https://huggingface.co/LaLa-World/lala-decoder-dinov3-l),
 [lala-decoder-siglip2-so400m](https://huggingface.co/LaLa-World/lala-decoder-siglip2-so400m).
@@ -283,7 +253,7 @@ tests/              unit tests (pytest tests)
 @article{song2026lalaworld,
   title   = {LaLa-World: Scaling Latent World Models with Natural Language Actions},
   author  = {Song, Junha and Gu, Geonmo and Park, Jeongeun and Nam, Heejeong and Maes, Lucas and Heo, Byeongho and Han, Dongyoon and Yun, Sangdoo},
-  journal = {arXiv preprint},
+  journal = {arXiv preprint arXiv:2610.27851},
   year    = {2026}
 }
 ```
