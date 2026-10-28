@@ -128,14 +128,15 @@ The OpenVid frame sequences and change captions are on the Hub:
 python -m app.main --fname configs/lala_world/base.yaml --devices cuda:0 cuda:1 cuda:2 cuda:3 cuda:4 cuda:5 cuda:6 cuda:7
 ```
 
-| config | vision encoder | predictor | context | data |
-|---|---|---|---|---|
-| `base.yaml` | DINOv2-S/14 | Qwen3.5-0.8B, 24 layers | up to 3 frames | 7 control datasets (DROID capped at 1.5M) + OpenVid + OmniEdit + ShareGPT |
-| `dinov3_l.yaml` | DINOv3-L/16 | Qwen3.5-0.8B, 24 layers | up to 3 frames | same, full DROID |
-| `siglip2_so400m.yaml` | SigLIP2-So400M/14 | Qwen3.5-0.8B, 24 layers | 1 frame | same; the LaLa-Policy initialization |
+| config | vision encoder | predictor |
+|---|---|---|
+| `base.yaml` | DINOv2-S/14 | Qwen3.5-0.8B, 24 layers |
+| `dinov3_l.yaml` | DINOv3-L/16 | Qwen3.5-0.8B, 24 layers |
+| `siglip2_so400m.yaml` | SigLIP2-So400M/14 | Qwen3.5-0.8B, 24 layers |
 
-One process per GPU, 20 epochs x 1M samples at global batch 512 (`batch_size x #GPUs x grad_accum_steps`), about
-2 days on 8 x H100. Outputs land in `folder/` (`train.csv`, `val.jsonl`, `lala-e<epoch>.pth.tar`); `meta.quick_debug: true`
+All three use up to 3 context frames and the same data: 7 control datasets (DROID capped at 1.5M) + OpenVid + OmniEdit +
+ShareGPT; `siglip2_so400m.yaml` is the LaLa-Policy initialization. One process per GPU, 20 epochs x 1M samples at
+global batch 512 (`batch_size x #GPUs x grad_accum_steps`), about 2 days on 8 x H100. Outputs land in `folder/` (`train.csv`, `val.jsonl`, `lala-e<epoch>.pth.tar`); `meta.quick_debug: true`
 turns any config into a 4-step smoke run. Validation logs the prediction loss per source group, the same loss with
 the action text blanked, and `rel_l2` (error relative to copying the last frame).
 

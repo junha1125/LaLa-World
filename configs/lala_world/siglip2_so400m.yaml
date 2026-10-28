@@ -1,4 +1,4 @@
-# LaLa-World: SigLIP2-So400M/14 encoder + Qwen3.5-0.8B (24 layers), single-frame context; the LaLa-Policy initialization
+# LaLa-World: SigLIP2-So400M/14 encoder + Qwen3.5-0.8B (24 layers), up to 3 context frames, DROID capped at 1.5M transitions per text format; the LaLa-Policy initialization
 # 8 x H100: python -m app.main --fname configs/lala_world/siglip2_so400m.yaml --devices cuda:0 cuda:1 cuda:2 cuda:3 cuda:4 cuda:5 cuda:6 cuda:7
 app: lala_world
 folder: logs/lala_world/siglip2_so400m
@@ -17,22 +17,22 @@ data:
   mixing: concat            # batch composition follows source sizes; max_samples caps a source
   sources:
     # control data: simulation (5-step action chunks), deformable + DROID (1-step), two text formats each
-    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/metaworld.jsonl", clip_len: 2, action_field: actions_semantic_no_proprio}
-    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/metaworld.jsonl", clip_len: 2, action_field: actions_lang6_no_proprio}
-    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/pusht.jsonl", clip_len: 2, action_field: actions_semantic_no_proprio}
-    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/pusht.jsonl", clip_len: 2, action_field: actions_lang6_no_proprio}
-    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/point_maze.jsonl", clip_len: 2, action_field: actions_semantic_no_proprio}
-    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/point_maze.jsonl", clip_len: 2, action_field: actions_lang6_no_proprio}
-    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/wall.jsonl", clip_len: 2, action_field: actions_semantic_no_proprio}
-    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/wall.jsonl", clip_len: 2, action_field: actions_lang6_no_proprio}
-    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/rope.jsonl", clip_len: 2, window: 1, action_field: actions_semantic_no_proprio}
-    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/rope.jsonl", clip_len: 2, window: 1, action_field: actions_lang6_no_proprio}
-    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/granular.jsonl", clip_len: 2, window: 1, action_field: actions_semantic_no_proprio}
-    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/granular.jsonl", clip_len: 2, window: 1, action_field: actions_lang6_no_proprio}
-    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/droid.jsonl", clip_len: 2, window: 1, action_field: actions_semantic_no_proprio, max_samples: 1500000}
-    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/droid.jsonl", clip_len: 2, window: 1, action_field: actions_lang6_no_proprio, max_samples: 1500000}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/metaworld.jsonl", clip_len: 4, action_field: actions_semantic_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/metaworld.jsonl", clip_len: 4, action_field: actions_lang6_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/pusht.jsonl", clip_len: 4, action_field: actions_semantic_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/pusht.jsonl", clip_len: 4, action_field: actions_lang6_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/point_maze.jsonl", clip_len: 4, action_field: actions_semantic_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/point_maze.jsonl", clip_len: 4, action_field: actions_lang6_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/wall.jsonl", clip_len: 4, action_field: actions_semantic_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/wall.jsonl", clip_len: 4, action_field: actions_lang6_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/rope.jsonl", clip_len: 4, window: 1, action_field: actions_semantic_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/rope.jsonl", clip_len: 4, window: 1, action_field: actions_lang6_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/granular.jsonl", clip_len: 4, window: 1, action_field: actions_semantic_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/granular.jsonl", clip_len: 4, window: 1, action_field: actions_lang6_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/droid.jsonl", clip_len: 4, window: 1, action_field: actions_semantic_no_proprio, max_samples: 1500000}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/droid.jsonl", clip_len: 4, window: 1, action_field: actions_lang6_no_proprio, max_samples: 1500000}
     # video and image-editing data: the caption / instruction is the language condition
-    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/openvid.jsonl", clip_len: 2, window: 1, action_field: actions_semantic_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/openvid.jsonl", clip_len: 4, window: 1, action_field: actions_semantic_no_proprio}
     - {kind: jsonl, path: "${LALA_DATA_ROOT}/jsonl/pair/omniedit.jsonl"}
     - {kind: jsonl, path: "${LALA_DATA_ROOT}/jsonl/pair/sharegpt.jsonl"}
   val_groups:
@@ -43,7 +43,7 @@ data:
     edit: [omniedit, sharegpt]
   max_text_tokens: 96
   text_dropout_p: 0.0
-  batch_size: 16             # per GPU
+  batch_size: 8             # per GPU
   num_workers: 8
   pin_mem: true
 model:
@@ -66,7 +66,7 @@ loss:
 optimization:
   epochs: 20
   samples_per_epoch: 1000000
-  grad_accum_steps: 4       # global batch = batch_size x #GPUs x grad_accum_steps = 512 on 8 GPUs
+  grad_accum_steps: 8       # global batch = batch_size x #GPUs x grad_accum_steps = 512 on 8 GPUs
   lr: 2.0e-4
   start_lr: 1.0e-5
   final_lr: 1.0e-6

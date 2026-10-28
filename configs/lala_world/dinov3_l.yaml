@@ -1,4 +1,4 @@
-# LaLa-World: DINOv3-L/16 encoder + Qwen3.5-0.8B (24 layers), up to 3 context frames, full DROID
+# LaLa-World: DINOv3-L/16 encoder + Qwen3.5-0.8B (24 layers), up to 3 context frames, DROID capped at 1.5M transitions per text format
 # 8 x H100: python -m app.main --fname configs/lala_world/dinov3_l.yaml --devices cuda:0 cuda:1 cuda:2 cuda:3 cuda:4 cuda:5 cuda:6 cuda:7
 app: lala_world
 folder: logs/lala_world/dinov3_l
@@ -29,8 +29,8 @@ data:
     - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/rope.jsonl", clip_len: 4, window: 1, action_field: actions_lang6_no_proprio}
     - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/granular.jsonl", clip_len: 4, window: 1, action_field: actions_semantic_no_proprio}
     - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/granular.jsonl", clip_len: 4, window: 1, action_field: actions_lang6_no_proprio}
-    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/droid.jsonl", clip_len: 4, window: 1, action_field: actions_semantic_no_proprio}
-    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/droid.jsonl", clip_len: 4, window: 1, action_field: actions_lang6_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/droid.jsonl", clip_len: 4, window: 1, action_field: actions_semantic_no_proprio, max_samples: 1500000}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/droid.jsonl", clip_len: 4, window: 1, action_field: actions_lang6_no_proprio, max_samples: 1500000}
     # video and image-editing data: the caption / instruction is the language condition
     - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/openvid.jsonl", clip_len: 4, window: 1, action_field: actions_semantic_no_proprio}
     - {kind: jsonl, path: "${LALA_DATA_ROOT}/jsonl/pair/omniedit.jsonl"}
