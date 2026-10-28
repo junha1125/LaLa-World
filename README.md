@@ -80,7 +80,7 @@ bash scripts/download_models.sh     # hf-models/: Qwen3.5-0.8B, DINOv2 ViT-S/14,
 
 **Simulators for planning evaluation.** Wall, PointMaze, Push-T and Meta-World come with the `sim` extra
 (`export MUJOCO_GL=osmesa PYOPENGL_PLATFORM=osmesa` for Meta-World). Rope and Granular need the PyFleX build
-from [DINO-WM](https://github.com/apple/ml-dino-wm); point `PYFLEX_HOME` at it.
+from [DINO-WM](https://github.com/gaoyuezhou/dino_wm); point `PYFLEX_HOME` at it.
 
 **Simulators for policy evaluation.** LIBERO and RoboCasa pin their own `robosuite`/`mujoco`, so the evaluation
 drivers use two small venvs that share the main site-packages:
@@ -286,6 +286,7 @@ tests/              unit tests (pytest tests)
 
 - [facebookresearch/jepa-wms](https://github.com/facebookresearch/jepa-wms): this repository is built on it (training
   scaffold, simulators, planner, evaluation data).
+- [gaoyuezhou/dino_wm](https://github.com/gaoyuezhou/dino_wm): the Wall, PointMaze, Push-T and deformable environments.
 - [nanovisionx/RAEv2](https://github.com/nanovisionx/RAEv2): the generative world-model baseline and the decoder recipe.
 - [NVIDIA/Isaac-GR00T](https://github.com/NVIDIA/Isaac-GR00T): the flow-matching action head of LaLa-Policy.
 - [nvidia/LIBERO-Cosmos-Policy](https://huggingface.co/datasets/nvidia/LIBERO-Cosmos-Policy) and

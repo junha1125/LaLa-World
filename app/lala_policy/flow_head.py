@@ -1,4 +1,5 @@
 """FlowHead: Isaac-GR00T's flow-matching action head (DiT) conditioned on the LLM hidden states.
+Adapted from NVIDIA Isaac-GR00T (https://github.com/NVIDIA/Isaac-GR00T, Apache License 2.0); see THIRD-PARTY-LICENSES.md.
 
 tokens [state | noisy action x K | (noisy p' | noisy V)] -> `layers` DiT blocks (even blocks cross-attend to the
 LLM states, odd blocks self-attend, AdaLN on the flow time) -> per-target decoder MLPs. GR00T convention:
