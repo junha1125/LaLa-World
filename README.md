@@ -201,7 +201,6 @@ tests/              unit tests                                                  
 
 ## Roadmap
 
-- [x] Environment setup (Docker, pip) and data preparation scripts
 - [ ] LaLa-World training and planning evaluation code
 - [ ] LaLa-Policy training and evaluation code
 - [ ] LaLa-World checkpoints on Hugging Face
