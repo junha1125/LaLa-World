@@ -1,0 +1,187 @@
+# 1/4-depth DiT (7 of the 28 encoder blocks) trained for the same number of steps as the rae_xl run (73,767 at batch 256).
+# PYTHONPATH=src torchrun --nproc_per_node=8 src/wm/train.py --config configs/rae_dit7.yaml --compile
+run_dir: runs/rae_dit7
+dinov3_repo_dir: null
+stage_1:
+  encoder_name: dinov3mls-vit-l16[layers=11.13.15.17.19.21.23]
+  resolution: 256
+  decoder_config_path: configs/decoder/ViTXL
+  pretrained_decoder_path: pretrained_models/stage1/imagenet/dinov3l-k7/decoder.pt
+  noise_tau: 0.0
+  normalization_stat_path: pretrained_models/stage1/imagenet/dinov3l-k7/stats.pt
+text_encoder:
+  model_path: pretrained_models/Qwen3-0.6B
+  max_length: 96
+model:
+  input_size: 16
+  in_channels: 1024
+  hidden_size:
+  - 1440
+  - 2048
+  depth:
+  - 7
+  - 2
+  num_heads:
+  - 20
+  - 16
+  mlp_ratio: 4.0
+  base_model_depth: 4
+  num_t_tokens: 4
+init:
+  stage2_ckpt: pretrained_models/stage2/imagenet/dinov3l-k7/checkpoint.pt
+  which: ema
+  n_enc_ckpt: 28
+conditioning:
+  text_dropout_p: 0.1
+transport:
+  prediction: x
+  time_dist_type: logit-normal_0_1
+  t_eps: 0.05
+internal_guidance:
+  base_model_coeff: 1.0
+misc:
+  latent_size:
+  - 1024
+  - 16
+  - 16
+  time_dist_shift_dim: 262144
+  time_dist_shift_base: 4096
+data:
+  root: data
+  image_size: 256
+  num_workers: 8
+  val_per_source: 256
+  val_batch_size: 128
+  sources:
+  - kind: traj_jsonl
+    path: jsonl/traj/metaworld.jsonl
+    clip_len: 2
+    action_field: actions_semantic_no_proprio
+    max_samples: -1
+    domain_prefix: false
+  - kind: traj_jsonl
+    path: jsonl/traj/metaworld.jsonl
+    clip_len: 2
+    action_field: actions_lang6_no_proprio
+    max_samples: -1
+    domain_prefix: false
+  - kind: traj_jsonl
+    path: jsonl/traj/pusht.jsonl
+    clip_len: 2
+    action_field: actions_semantic_no_proprio
+    max_samples: -1
+    domain_prefix: false
+  - kind: traj_jsonl
+    path: jsonl/traj/pusht.jsonl
+    clip_len: 2
+    action_field: actions_lang6_no_proprio
+    max_samples: -1
+    domain_prefix: false
+  - kind: traj_jsonl
+    path: jsonl/traj/point_maze.jsonl
+    clip_len: 2
+    action_field: actions_semantic_no_proprio
+    max_samples: -1
+    domain_prefix: false
+  - kind: traj_jsonl
+    path: jsonl/traj/point_maze.jsonl
+    clip_len: 2
+    action_field: actions_lang6_no_proprio
+    max_samples: -1
+    domain_prefix: false
+  - kind: traj_jsonl
+    path: jsonl/traj/wall.jsonl
+    clip_len: 2
+    action_field: actions_semantic_no_proprio
+    max_samples: -1
+    domain_prefix: false
+  - kind: traj_jsonl
+    path: jsonl/traj/wall.jsonl
+    clip_len: 2
+    action_field: actions_lang6_no_proprio
+    max_samples: -1
+    domain_prefix: false
+  - kind: traj_jsonl
+    path: jsonl/traj/rope.jsonl
+    clip_len: 2
+    window: 1
+    action_field: actions_semantic_no_proprio
+    max_samples: -1
+    domain_prefix: false
+  - kind: traj_jsonl
+    path: jsonl/traj/rope.jsonl
+    clip_len: 2
+    window: 1
+    action_field: actions_lang6_no_proprio
+    max_samples: -1
+    domain_prefix: false
+  - kind: traj_jsonl
+    path: jsonl/traj/granular.jsonl
+    clip_len: 2
+    window: 1
+    action_field: actions_semantic_no_proprio
+    max_samples: -1
+    domain_prefix: false
+  - kind: traj_jsonl
+    path: jsonl/traj/granular.jsonl
+    clip_len: 2
+    window: 1
+    action_field: actions_lang6_no_proprio
+    max_samples: -1
+    domain_prefix: false
+  - kind: traj_jsonl
+    path: jsonl/traj/droid.jsonl
+    clip_len: 2
+    window: 1
+    action_field: actions_semantic_no_proprio
+    max_samples: -1
+    domain_prefix: false
+  - kind: traj_jsonl
+    path: jsonl/traj/droid.jsonl
+    clip_len: 2
+    window: 1
+    action_field: actions_lang6_no_proprio
+    max_samples: -1
+    domain_prefix: false
+  - kind: traj_jsonl
+    path: jsonl/traj/openvid.jsonl
+    clip_len: 2
+    window: 1
+    action_field: actions_semantic_no_proprio
+    max_samples: -1
+    domain_prefix: false
+  - kind: jsonl
+    path: jsonl/pair/omniedit.jsonl
+    max_samples: -1
+    domain_prefix: false
+  - kind: jsonl
+    path: jsonl/pair/sharegpt.jsonl
+    max_samples: -1
+    domain_prefix: false
+training:
+  seed: 42
+  global_batch_size: 256
+  samples_per_epoch: 1000000
+  max_steps: 73767
+  max_hours: 999.0
+  warmup_steps: 2000
+  final_lr_ratio: 0.1
+  optimizer:
+    type: gmuon
+    lr: 0.0002
+    momentum: 0.95
+    nesterov: true
+    ns_coefficients_preset: POLAR_EXPRESS_COEFFICIENTS
+    ns_use_kernels: false
+    weight_decay: 0.0
+  ema_decay: 0.9995
+  clip_grad: 1.0
+  log_every: 50
+  val_every: 5000
+  ckpt_every: 5000
+  rel_l2_every: 50
+  schedule_steps: 80000
+logging:
+  use_wandb: false
+  project: LaLa-World
+  run_name: null

@@ -41,6 +41,7 @@ future representations.
 - [LaLa-World](#lala-world): [Data](#data) · [Training](#training) · [Planning evaluation](#planning-evaluation) · [Checkpoints](#checkpoints)
 - [LaLa-Policy](#lala-policy): [Data](#data-1) · [Training](#training-1) · [Evaluation](#evaluation) · [Checkpoints](#checkpoints-1)
 - [Decoder](#decoder)
+- [Video generation baseline](#video-generation-baseline)
 - [Repository layout](#repository-layout)
 - [Roadmap](#roadmap)
 - [Citation](#citation)
@@ -233,6 +234,24 @@ python -m decoder.recon --ckpt checkpoints/lala-decoder-dinov2-s.pt --images a.p
 The planning and policy evaluations decode imagined futures with `--decoder-ckpt` (`--save-pred-decode N` and
 `--save-imagine N`); details in [`decoder/README.md`](decoder/README.md).
 
+## Video generation baseline
+
+The paper compares LaLa-World with a generative world model built on [RAEv2](https://github.com/nanovisionx/RAEv2):
+the same DINOv3-L/16 encoder, language actions and training transitions, but a DiT-XL predictor that denoises the
+next-frame latent instead of regressing it. `RAEv2/` holds the trimmed upstream code, the world-model trainer and the
+planning backend; setup and details in [`RAEv2/README.md`](RAEv2/README.md).
+
+```bash
+cd RAEv2
+pip install timm && pip install --no-deps "git+https://github.com/nanovisionx/gmuon.git"
+bash scripts/download_weights.sh                      # RAE encoder/decoder, ImageNet stage-2 DiT, Qwen3-0.6B
+bash scripts/train.sh configs/rae_xl.yaml             # 8 x H100, 12 h  (configs/rae_dit7.yaml: 1/4-depth DiT)
+cd ..
+CK=RAEv2/runs/rae_xl/checkpoints/step-0073767.pt
+bash RAEv2/scripts/eval_planning.sh $CK RAEv2/runs/rae_xl/planning                                # 6 domains, 8 GPUs, 1 denoising step (NFE=5 for 5)
+python -m evals.lala_world.run_planning --wm rae --ckpt $CK --env wall --episodes 96 --rae-nfe 1   # one domain
+```
+
 ## Repository layout
 
 ```
@@ -242,6 +261,7 @@ pyproject.toml      package and extras (sim, data, decoder, dev)
 app/, configs/      LaLa-World and LaLa-Policy training code and configs (entry point app/main.py)
 evals/              planning evaluation, policy rollouts, simulators and the CEM planner
 decoder/            latent-to-pixel decoder
+RAEv2/              RAEv2 generative world-model baseline (trainer and planning backend)
 tests/              unit tests (pytest tests)
 ```
 
@@ -266,7 +286,7 @@ tests/              unit tests (pytest tests)
 
 - [facebookresearch/jepa-wms](https://github.com/facebookresearch/jepa-wms): this repository is built on it (training
   scaffold, simulators, planner, evaluation data).
-- [nanovisionx/RAEv2](https://github.com/nanovisionx/RAEv2): the decoder recipe.
+- [nanovisionx/RAEv2](https://github.com/nanovisionx/RAEv2): the generative world-model baseline and the decoder recipe.
 - [NVIDIA/Isaac-GR00T](https://github.com/NVIDIA/Isaac-GR00T): the flow-matching action head of LaLa-Policy.
 - [nvidia/LIBERO-Cosmos-Policy](https://huggingface.co/datasets/nvidia/LIBERO-Cosmos-Policy) and
   [nvidia/RoboCasa-Cosmos-Policy](https://huggingface.co/datasets/nvidia/RoboCasa-Cosmos-Policy): the policy

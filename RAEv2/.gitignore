@@ -1,0 +1,4 @@
+pretrained_models/
+runs/
+__pycache__/
+*.pyc
