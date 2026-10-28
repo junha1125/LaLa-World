@@ -1,5 +1,5 @@
 Rebuild the OpenVid frame sequences from the original OpenVid-1M release (only needed if you do not use the
-pre-extracted frames from `junha1125/openvid-frame-sequences-1M`). All outputs go to `<root>/openvid_raw/`.
+pre-extracted frames from `LaLa-World/openvid-frame-sequences-1M`). All outputs go to `<root>/openvid_raw/`.
 
 ```bash
 R=data/openvid_raw; mkdir -p $R/meta

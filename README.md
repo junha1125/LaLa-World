@@ -116,9 +116,9 @@ Outputs: `data/jsonl/traj/<dataset>.jsonl` (one line per episode, frames under `
 `data/jsonl/pair/{omniedit,sharegpt}.jsonl`. The action-text normalization specs used by both the builders and
 the planner are shipped in `data_preparation/specs/` and `data_preparation/lang_bins/`.
 
-- [ ] OpenVid change captions (`outputs/captions.jsonl`) will be added to
-  [junha1125/openvid-frame-sequences-1M](https://huggingface.co/datasets/junha1125/openvid-frame-sequences-1M);
-  until then `data_preparation/openvid/caption_sequences.py` regenerates them with any OpenAI-compatible VLM endpoint.
+The OpenVid frame sequences and change captions are on the Hub:
+[LaLa-World/openvid-frame-sequences-1M](https://huggingface.co/datasets/LaLa-World/openvid-frame-sequences-1M)
+(`prepare_data.sh openvid` downloads both).
 
 ### Training
 
@@ -222,7 +222,8 @@ Wilson 95% CIs). Single tasks, flow steps and decoding the imagined frames:
 ## Decoder
 
 A 12-layer ViT decoder per vision encoder maps patch latents, including the futures LaLa-World imagines, back to
-pixels (L1 + LPIPS, RAEv2's decoder recipe). It is used only for visualization.
+pixels (L1 + LPIPS, RAEv2's decoder recipe). It is used only for visualization. Pretrained decoders:
+[LaLa-World/lala-decoder](https://huggingface.co/LaLa-World/lala-decoder).
 
 ```bash
 bash decoder/launch.sh decoder/configs/dinov2s.yaml                                                        # train; dinov3l.yaml, siglip2so400m.yaml
@@ -248,8 +249,6 @@ tests/              unit tests (pytest tests)
 
 - [ ] LaLa-World checkpoints on Hugging Face
 - [ ] LaLa-Policy checkpoints on Hugging Face
-- [ ] Decoder checkpoints on Hugging Face (one per encoder)
-- [ ] OpenVid change captions on the Hub
 - [ ] Planning evaluation on the environments provided by [Stable-WorldModel](https://github.com/galilai-group/stable-worldmodel)
 
 ## Citation

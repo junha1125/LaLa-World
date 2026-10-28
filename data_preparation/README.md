@@ -37,7 +37,7 @@ abort if the rebuilt data disagree with them; `--stats-only` regenerates them fr
 | Wall, PointMaze, Push-T, Meta-World | [facebook/jepa-wms](https://huggingface.co/datasets/facebook/jepa-wms) | 6 GB (zips) | 97 GB raw, 43 GB frames |
 | Rope, Granular | [DINO-WM OSF release](https://osf.io/bmw48/?view_only=a56a296ce3b24cceaf408383a175ce28) | 16 GB (split zip) | 0.7 GB frames |
 | DROID | [lerobot/droid_1.0.1](https://huggingface.co/datasets/lerobot/droid_1.0.1) (meta, data, `exterior_1_left`) | 165 GB | 149 GB frames |
-| OpenVid-1M sequences | [junha1125/openvid-frame-sequences-1M](https://huggingface.co/datasets/junha1125/openvid-frame-sequences-1M) | 54 GB | 53 GB frames |
+| OpenVid-1M sequences | [LaLa-World/openvid-frame-sequences-1M](https://huggingface.co/datasets/LaLa-World/openvid-frame-sequences-1M) | 54 GB | 53 GB frames |
 | OmniEdit | [TIGER-Lab/OmniEdit-Filtered-1.2M](https://huggingface.co/datasets/TIGER-Lab/OmniEdit-Filtered-1.2M), every 4th shard | 745 GB | 32 GB frames |
 | ShareGPT-4o-Image | [FreedomIntelligence/ShareGPT-4o-Image](https://huggingface.co/datasets/FreedomIntelligence/ShareGPT-4o-Image), I2I split | 171 GB | 161 GB images |
 | RoboCasa demos, Franka trajectories (evaluation only) | [facebook/jepa-wms](https://huggingface.co/datasets/facebook/jepa-wms) | 5 GB | - |
@@ -62,8 +62,8 @@ python data_preparation/droid/validate_droid_traj.py --root data
 ```
 
 **OpenVid-1M** (`openvid`): ten frames 0.5 s apart per sequence; the condition for each adjacent pair is a change
-caption written by Qwen3-VL-30B-A3B-Instruct. The pre-extracted frames are on the Hub; the captions will be added
-to the same repository. To regenerate them, serve the VLM behind an OpenAI-compatible endpoint:
+caption written by Qwen3-VL-30B-A3B-Instruct. The pre-extracted frames and the captions (`outputs/captions.jsonl`) are
+on the Hub and `download_openvid.py` fetches both. To regenerate the captions, serve the VLM behind an OpenAI-compatible endpoint:
 
 ```bash
 python data_preparation/openvid/download_openvid.py --root data

@@ -1,4 +1,4 @@
-"""Download the released OpenVid frame sequences (junha1125/openvid-frame-sequences-1M: sequences.jsonl +
+"""Download the released OpenVid frame sequences (LaLa-World/openvid-frame-sequences-1M: sequences.jsonl +
 64 frame tars, 54 GB) into <root>/openvid_raw/ and extract the tars. The change captions
 (outputs/captions.jsonl) are downloaded from the same repo when present; otherwise run caption_sequences.py.
 
@@ -12,7 +12,7 @@ import tarfile
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common import add_root_arg, data_root  # noqa: E402
 
-REPO_ID = "junha1125/openvid-frame-sequences-1M"
+REPO_ID = "LaLa-World/openvid-frame-sequences-1M"
 
 
 def main():
