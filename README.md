@@ -294,5 +294,4 @@ tests/              unit tests (pytest tests)
 
 ## License
 
-The license will be announced together with the code release. Parts of this repository derive from JEPA-WMs, RAEv2
-and Isaac-GR00T; see [Acknowledgements](#acknowledgements).
+This project is licensed under CC-BY-NC 4.0. See [THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md) for third-party components.
