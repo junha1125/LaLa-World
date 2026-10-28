@@ -224,7 +224,9 @@ Wilson 95% CIs). Single tasks and decoding the imagined frames:
 
 A 12-layer ViT decoder per vision encoder maps patch latents, including the futures LaLa-World imagines, back to
 pixels (L1 + LPIPS, RAEv2's decoder recipe). It is used only for visualization. Pretrained decoders:
-[LaLa-World/lala-decoder](https://huggingface.co/LaLa-World/lala-decoder).
+[lala-decoder-dinov2-s](https://huggingface.co/LaLa-World/lala-decoder-dinov2-s),
+[lala-decoder-dinov3-l](https://huggingface.co/LaLa-World/lala-decoder-dinov3-l),
+[lala-decoder-siglip2-so400m](https://huggingface.co/LaLa-World/lala-decoder-siglip2-so400m).
 
 ```bash
 bash decoder/launch.sh decoder/configs/dinov2s.yaml                                                        # train; dinov3l.yaml, siglip2so400m.yaml

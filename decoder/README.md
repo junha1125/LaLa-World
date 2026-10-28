@@ -26,5 +26,7 @@ python -m decoder.recon --ckpt logs/decoder/dinov2s/checkpoints/latest.pt --late
 The planning and policy evaluations decode imagined futures with `--decoder-ckpt <checkpoint>` (world model:
 `--save-pred-decode N`, policy: `--save-imagine N`); the decoder must match the checkpoint's vision encoder.
 
-- Pretrained decoders: [LaLa-World/lala-decoder](https://huggingface.co/LaLa-World/lala-decoder)
-  (`lala-decoder-dinov2-s.pt`, `lala-decoder-dinov3-l.pt`, `lala-decoder-siglip2-so400m.pt`).
+- Pretrained decoders, one Hugging Face repo per vision encoder:
+  [lala-decoder-dinov2-s](https://huggingface.co/LaLa-World/lala-decoder-dinov2-s),
+  [lala-decoder-dinov3-l](https://huggingface.co/LaLa-World/lala-decoder-dinov3-l),
+  [lala-decoder-siglip2-so400m](https://huggingface.co/LaLa-World/lala-decoder-siglip2-so400m).
