@@ -1,0 +1,12 @@
+# Image pool = the LaLa-World training mix with one text format per source and clip_len 2 (both frames of a transition)
+sources:
+- {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/metaworld.jsonl", clip_len: 2, action_field: actions_semantic_no_proprio}
+- {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/pusht.jsonl", clip_len: 2, action_field: actions_semantic_no_proprio}
+- {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/point_maze.jsonl", clip_len: 2, action_field: actions_semantic_no_proprio}
+- {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/wall.jsonl", clip_len: 2, action_field: actions_semantic_no_proprio}
+- {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/rope.jsonl", clip_len: 2, window: 1, action_field: actions_semantic_no_proprio}
+- {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/granular.jsonl", clip_len: 2, window: 1, action_field: actions_semantic_no_proprio}
+- {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/droid.jsonl", clip_len: 2, window: 1, action_field: actions_semantic_no_proprio, max_samples: 1500000}
+- {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/openvid.jsonl", clip_len: 2, window: 1, action_field: actions_semantic_no_proprio}
+- {kind: jsonl, path: "${LALA_DATA_ROOT}/jsonl/pair/omniedit.jsonl"}
+- {kind: jsonl, path: "${LALA_DATA_ROOT}/jsonl/pair/sharegpt.jsonl"}

@@ -1,0 +1,36 @@
+# Pixel decoder for DINOv2-S/14 @ 224 (16 x 16 patches, 384-d)
+run_dir: logs/decoder/dinov2s
+seed: 0
+vision:
+  kind: dinov2
+  model_id: facebookresearch/dinov2
+  hub_model: dinov2_vits14
+  image_size: 224
+decoder:
+  depth: 12
+  dim: 384               # = encoder width
+  num_heads: null          # null -> dim // 64
+  mlp_ratio: 4.0
+  noise_tau: 0.8           # feature-noise augmentation: sigma ~ U(0, tau) x feature RMS
+  qk_norm: true
+data:
+  sources: sources.yaml
+  batch_items: 32          # per GPU; 2 frames per item -> 64 images / GPU
+  num_workers: 8
+optim:
+  total_images: 100000000
+  lr: 1.0e-4
+  final_lr: 2.0e-5
+  warmup_steps: 2000
+  weight_decay: 0.05
+  betas: [0.9, 0.95]
+  clip_grad: 1.0
+  lpips_weight: 1.0
+  ema_decay: 0.9978
+log:
+  log_every: 50
+  eval_every: 5000
+  save_every: 5000
+  keep_every: 25000
+  val_per_source: 64
+  grid_per_source: 8

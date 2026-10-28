@@ -47,8 +47,9 @@ future representations.
 - [Acknowledgements](#acknowledgements)
 - [License](#license)
 
-> **(October 2026).** This repository is being populated. Environment setup and data preparation are available now.
-> Training and evaluation code, pretrained checkpoints and the decoder will follow shortly; the sections marked 🚧 describe what is coming.
+> **(October 2026).** This repository is being populated. Environment setup, data preparation, the LaLa-World training
+> and planning code and the decoder are available now. The LaLa-Policy code and the pretrained checkpoints will follow
+> shortly; the sections marked 🚧 describe what is coming.
 
 ## Installation
 
@@ -122,17 +123,38 @@ the planner are shipped in `data_preparation/specs/` and `data_preparation/lang_
 
 ### Training
 
-> 🚧 **Updating soon.** One trainer (`python -m app.main --fname configs/lala_world/<config>.yaml`), one process per
-> GPU, with a config per vision encoder: DINOv2-S/14 (`base.yaml`), DINOv3-L/16 (`dinov3_l.yaml`) and
-> SigLIP2-So400M/14 (`siglip2_so400m.yaml`, the LaLa-Policy initialization). 20 epochs x 1M samples at global batch
-> 512, about 2 days on 8 x H100.
+```bash
+python -m app.main --fname configs/lala_world/base.yaml --devices cuda:0 cuda:1 cuda:2 cuda:3 cuda:4 cuda:5 cuda:6 cuda:7
+```
+
+| config | vision encoder | predictor | context | data |
+|---|---|---|---|---|
+| `base.yaml` | DINOv2-S/14 | Qwen3.5-0.8B, 24 layers | up to 3 frames | 7 control datasets (DROID capped at 1.5M) + OpenVid + OmniEdit + ShareGPT |
+| `dinov3_l.yaml` | DINOv3-L/16 | Qwen3.5-0.8B, 24 layers | up to 3 frames | same, full DROID |
+| `siglip2_so400m.yaml` | SigLIP2-So400M/14 | Qwen3.5-0.8B, 24 layers | 1 frame | same; the LaLa-Policy initialization |
+
+One process per GPU, 20 epochs x 1M samples at global batch 512 (`batch_size x #GPUs x grad_accum_steps`), about
+2 days on 8 x H100. Outputs land in `folder/` (`train.csv`, `val.jsonl`, `lala-e<epoch>.pth.tar`); `meta.quick_debug: true`
+turns any config into a 4-step smoke run. Validation logs the prediction loss per source group, the same loss with
+the action text blanked, and `rel_l2` (error relative to copying the last frame).
 
 ### Planning evaluation
 
-> 🚧 **Updating soon.** MPC with CEM in latent space on Wall, PointMaze, Push-T, Meta-World (reach, reach-wall),
-> Rope and Granular, an offline action score on DROID, and zero-shot reach / place in RoboCasa. The DROID and RoboCasa
-> evaluation episodes are the hold-out sets released with [JEPA-WMs](https://github.com/facebookresearch/jepa-wms)
-> (`prepare_data.sh eval`). A 1-step probe checks that the prediction beats copying the current frame before planning.
+```bash
+CK=checkpoints/lala-world-dinov2-s.pth.tar
+python -m evals.lala_world.probe_onestep --ckpt $CK --env wall pusht --val-only --ctxt-windows 1 2 3   # 1-step check: the prediction must beat copying the current frame
+python -m evals.lala_world.run_planning --ckpt $CK --env wall --episodes 96                             # wall | point_maze | pusht
+python -m evals.lala_world.run_planning --ckpt $CK --env metaworld --mw-task reach --goal-H 20 --horizon 6 --iterations 15 --num-act-stepped 3 --episodes 48
+python -m evals.lala_world.run_planning --ckpt $CK --env rope --goal-H 5 --horizon 5 --iterations 30 --num-elites 30 --num-act-stepped 1 --episodes 24   # rope | granular (PyFleX)
+python -m evals.lala_world.run_planning_droid_franka --ckpt $CK --horizon 3 --ctxt-window 2 --episodes 64   # offline action score on DROID
+bash evals/lala_world/driver_robocasa.sh $CK reach 0 plan 32                                            # zero-shot RoboCasa reach | place (RoboCasa venv)
+```
+
+MPC with CEM in latent space on Wall, PointMaze, Push-T, Meta-World (reach, reach-wall), Rope and Granular, an
+offline action score on DROID, and zero-shot reach / place in RoboCasa; results go to `logs/planning/<env>/<tag>/result.json`.
+The DROID and RoboCasa episodes are the hold-out sets released with [JEPA-WMs](https://github.com/facebookresearch/jepa-wms)
+(`prepare_data.sh eval`). Per-benchmark settings, sharding over GPUs and decoding the imagined futures:
+[`evals/lala_world/README.md`](evals/lala_world/README.md).
 
 ### Checkpoints
 
@@ -184,24 +206,31 @@ images stay in the HDF5 files).
 
 ## Decoder
 
-> 🚧 **Updating soon.** A 12-layer ViT decoder per vision encoder maps patch latents, including the futures LaLa-World
-> imagines, back to pixels (L1 + LPIPS, RAEv2's decoder recipe). It is used only for visualization.
+A 12-layer ViT decoder per vision encoder maps patch latents, including the futures LaLa-World imagines, back to
+pixels (L1 + LPIPS, RAEv2's decoder recipe). It is used only for visualization.
+
+```bash
+bash decoder/launch.sh decoder/configs/dinov2s.yaml                                                        # train; dinov3l.yaml, siglip2so400m.yaml
+python -m decoder.recon --ckpt checkpoints/lala-decoder-dinov2-s.pt --images a.png b.png --out recon.png   # [originals; reconstructions]
+```
+
+The planning and policy evaluations decode imagined futures with `--decoder-ckpt` (`--save-pred-decode N` and
+`--save-imagine N`); details in [`decoder/README.md`](decoder/README.md).
 
 ## Repository layout
 
 ```
-data_preparation/   download and preprocessing scripts, normalization specs (specs/, lang_bins/)       available
-docker/, scripts/   Dockerfile, dependency and simulator setup, pretrained-model download              available
-pyproject.toml      package and extras (sim, data, decoder, dev)                                        available
-app/, configs/      LaLa-World and LaLa-Policy training code and configs (entry point app/main.py)     🚧
-evals/              planning evaluation, policy rollouts, simulators and the CEM planner                🚧
-decoder/            latent-to-pixel decoder                                                             🚧
-tests/              unit tests                                                                           🚧
+data_preparation/   download and preprocessing scripts, normalization specs (specs/, lang_bins/)
+docker/, scripts/   Dockerfile, dependency and simulator setup, pretrained-model download
+pyproject.toml      package and extras (sim, data, decoder, dev)
+app/, configs/      LaLa-World and LaLa-Policy training code and configs (entry point app/main.py)
+evals/              planning evaluation, policy rollouts, simulators and the CEM planner
+decoder/            latent-to-pixel decoder
+tests/              unit tests (pytest tests)
 ```
 
 ## Roadmap
 
-- [ ] LaLa-World training and planning evaluation code
 - [ ] LaLa-Policy training and evaluation code
 - [ ] LaLa-World checkpoints on Hugging Face
 - [ ] LaLa-Policy checkpoints on Hugging Face

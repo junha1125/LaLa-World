@@ -26,12 +26,6 @@ jepa-wms-origin-removed-before-push/
 
 # not yet released: remove an entry when its code is published
 RAEv2/
-app/
-configs/
-decoder/
-evals/
-src/
-tests/
 scripts/export_checkpoint.py
 
 # local notes and drafts

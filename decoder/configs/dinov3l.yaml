@@ -1,0 +1,34 @@
+# Pixel decoder for DINOv3-L/16 @ 224 (14 x 14 patches, 1024-d)
+run_dir: logs/decoder/dinov3l
+seed: 0
+vision:
+  kind: dinov3
+  model_id: facebook/dinov3-vitl16-pretrain-lvd1689m
+decoder:
+  depth: 12
+  dim: 1024               # = encoder width
+  num_heads: null          # null -> dim // 64
+  mlp_ratio: 4.0
+  noise_tau: 0.8           # feature-noise augmentation: sigma ~ U(0, tau) x feature RMS
+  qk_norm: true
+data:
+  sources: sources.yaml
+  batch_items: 32          # per GPU; 2 frames per item -> 64 images / GPU
+  num_workers: 8
+optim:
+  total_images: 60000000
+  lr: 2.0e-4
+  final_lr: 2.0e-5
+  warmup_steps: 2000
+  weight_decay: 0.05
+  betas: [0.9, 0.95]
+  clip_grad: 1.0
+  lpips_weight: 1.0
+  ema_decay: 0.9978
+log:
+  log_every: 50
+  eval_every: 5000
+  save_every: 5000
+  keep_every: 25000
+  val_per_source: 64
+  grid_per_source: 8

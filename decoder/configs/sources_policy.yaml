@@ -1,0 +1,35 @@
+# Image pool = the LaLa-World training mix with one text format per source and clip_len 2 (both frames of a transition)
+sources:
+- {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/metaworld.jsonl", clip_len: 2, action_field: actions_semantic_no_proprio}
+- {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/pusht.jsonl", clip_len: 2, action_field: actions_semantic_no_proprio}
+- {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/point_maze.jsonl", clip_len: 2, action_field: actions_semantic_no_proprio}
+- {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/wall.jsonl", clip_len: 2, action_field: actions_semantic_no_proprio}
+- {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/rope.jsonl", clip_len: 2, window: 1, action_field: actions_semantic_no_proprio}
+- {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/granular.jsonl", clip_len: 2, window: 1, action_field: actions_semantic_no_proprio}
+- {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/droid.jsonl", clip_len: 2, window: 1, action_field: actions_semantic_no_proprio, max_samples: 1500000}
+- {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/openvid.jsonl", clip_len: 2, window: 1, action_field: actions_semantic_no_proprio}
+- {kind: jsonl, path: "${LALA_DATA_ROOT}/jsonl/pair/omniedit.jsonl"}
+- {kind: jsonl, path: "${LALA_DATA_ROOT}/jsonl/pair/sharegpt.jsonl"}
+# plus the LIBERO / RoboCasa policy data, one view per source (current + future frame)
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_libero/jsonl/libero_spatial.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_libero/stats.json", views: [primary], chunk_size: 16}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_libero/jsonl/libero_spatial.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_libero/stats.json", views: [wrist], chunk_size: 16}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_libero/jsonl/libero_spatial_rollouts.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_libero/stats.json", views: [primary], chunk_size: 16}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_libero/jsonl/libero_spatial_rollouts.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_libero/stats.json", views: [wrist], chunk_size: 16}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_libero/jsonl/libero_object.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_libero/stats.json", views: [primary], chunk_size: 16}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_libero/jsonl/libero_object.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_libero/stats.json", views: [wrist], chunk_size: 16}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_libero/jsonl/libero_object_rollouts.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_libero/stats.json", views: [primary], chunk_size: 16}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_libero/jsonl/libero_object_rollouts.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_libero/stats.json", views: [wrist], chunk_size: 16}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_libero/jsonl/libero_goal.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_libero/stats.json", views: [primary], chunk_size: 16}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_libero/jsonl/libero_goal.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_libero/stats.json", views: [wrist], chunk_size: 16}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_libero/jsonl/libero_goal_rollouts.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_libero/stats.json", views: [primary], chunk_size: 16}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_libero/jsonl/libero_goal_rollouts.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_libero/stats.json", views: [wrist], chunk_size: 16}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_libero/jsonl/libero_10.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_libero/stats.json", views: [primary], chunk_size: 16}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_libero/jsonl/libero_10.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_libero/stats.json", views: [wrist], chunk_size: 16}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_libero/jsonl/libero_10_rollouts.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_libero/stats.json", views: [primary], chunk_size: 16}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_libero/jsonl/libero_10_rollouts.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_libero/stats.json", views: [wrist], chunk_size: 16}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_robocasa/jsonl/robocasa.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_robocasa/stats.json", views: [primary], chunk_size: 32}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_robocasa/jsonl/robocasa.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_robocasa/stats.json", views: [secondary], chunk_size: 32}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_robocasa/jsonl/robocasa.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_robocasa/stats.json", views: [wrist], chunk_size: 32}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_robocasa/jsonl/robocasa_rollouts.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_robocasa/stats.json", views: [primary], chunk_size: 32}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_robocasa/jsonl/robocasa_rollouts.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_robocasa/stats.json", views: [secondary], chunk_size: 32}
+- {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/cosmos_robocasa/jsonl/robocasa_rollouts.jsonl", stats_path: "${LALA_DATA_ROOT}/cosmos_robocasa/stats.json", views: [wrist], chunk_size: 32}

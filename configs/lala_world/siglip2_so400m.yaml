@@ -1,0 +1,80 @@
+# LaLa-World: SigLIP2-So400M/14 encoder + Qwen3.5-0.8B (24 layers), single-frame context; the LaLa-Policy initialization
+# 8 x H100: python -m app.main --fname configs/lala_world/siglip2_so400m.yaml --devices cuda:0 cuda:1 cuda:2 cuda:3 cuda:4 cuda:5 cuda:6 cuda:7
+app: lala_world
+folder: logs/lala_world/siglip2_so400m
+meta:
+  seed: 234
+  dtype: bfloat16
+  quick_debug: false        # true = 4 optimizer steps, 1 epoch (smoke test)
+  load_checkpoint: false    # true = resume from <folder>/lala-latest.pth.tar
+  read_checkpoint: null     # warm-start from another checkpoint path
+  log_freq: 50
+  eval_freq: 1
+  save_every_freq: 5
+  save_keep_last: -1        # -1 = keep every snapshot
+  max_train_minutes: null
+data:
+  mixing: concat            # batch composition follows source sizes; max_samples caps a source
+  sources:
+    # control data: simulation (5-step action chunks), deformable + DROID (1-step), two text formats each
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/metaworld.jsonl", clip_len: 2, action_field: actions_semantic_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/metaworld.jsonl", clip_len: 2, action_field: actions_lang6_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/pusht.jsonl", clip_len: 2, action_field: actions_semantic_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/pusht.jsonl", clip_len: 2, action_field: actions_lang6_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/point_maze.jsonl", clip_len: 2, action_field: actions_semantic_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/point_maze.jsonl", clip_len: 2, action_field: actions_lang6_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/wall.jsonl", clip_len: 2, action_field: actions_semantic_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/wall.jsonl", clip_len: 2, action_field: actions_lang6_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/rope.jsonl", clip_len: 2, window: 1, action_field: actions_semantic_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/rope.jsonl", clip_len: 2, window: 1, action_field: actions_lang6_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/granular.jsonl", clip_len: 2, window: 1, action_field: actions_semantic_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/granular.jsonl", clip_len: 2, window: 1, action_field: actions_lang6_no_proprio}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/droid.jsonl", clip_len: 2, window: 1, action_field: actions_semantic_no_proprio, max_samples: 1500000}
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/droid.jsonl", clip_len: 2, window: 1, action_field: actions_lang6_no_proprio, max_samples: 1500000}
+    # video and image-editing data: the caption / instruction is the language condition
+    - {kind: traj_jsonl, path: "${LALA_DATA_ROOT}/jsonl/traj/openvid.jsonl", clip_len: 2, window: 1, action_field: actions_semantic_no_proprio}
+    - {kind: jsonl, path: "${LALA_DATA_ROOT}/jsonl/pair/omniedit.jsonl"}
+    - {kind: jsonl, path: "${LALA_DATA_ROOT}/jsonl/pair/sharegpt.jsonl"}
+  val_groups:
+    sim: [metaworld, point_maze, pusht, wall]
+    deform: [granular, rope]
+    robot: [droid]
+    video: [openvid]
+    edit: [omniedit, sharegpt]
+  max_text_tokens: 96
+  text_dropout_p: 0.0
+  batch_size: 16             # per GPU
+  num_workers: 8
+  pin_mem: true
+model:
+  vision:
+    kind: siglip2             # siglip2 | dinov3 | dinov2
+    model_id: google/siglip2-so400m-patch14-224
+  llm:
+    kind: qwen3_5
+    model_id: Qwen/Qwen3.5-0.8B
+    num_layers: null          # null = all 24 layers
+    frozen: false
+    pretrained: true          # false = random-init LLM (same architecture and tokenizer)
+loss:
+  kind: wm_regression       # wm_regression | ijepa
+  l2_weight: 1.0
+  cos_weight: 0.0
+  l1_weight: 0.0
+  smooth_l1_weight: 0.0
+  normalize_reps: false
+optimization:
+  epochs: 20
+  samples_per_epoch: 1000000
+  grad_accum_steps: 4       # global batch = batch_size x #GPUs x grad_accum_steps = 512 on 8 GPUs
+  lr: 2.0e-4
+  start_lr: 1.0e-5
+  final_lr: 1.0e-6
+  warmup_steps: 1000
+  weight_decay: 0.05
+  betas: [0.9, 0.98]
+  clip_grad: 1.0
+logging:
+  project: LaLa-World
+  use_wandb: false
+  run_name: null
