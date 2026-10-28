@@ -47,9 +47,8 @@ future representations.
 - [Acknowledgements](#acknowledgements)
 - [License](#license)
 
-> **(October 2026).** This repository is being populated. Environment setup, data preparation, the LaLa-World training
-> and planning code and the decoder are available now. The LaLa-Policy code and the pretrained checkpoints will follow
-> shortly; the sections marked 🚧 describe what is coming.
+> **(October 2026).** This repository is being populated. Environment setup, data preparation, the training and
+> evaluation code and the decoder are available now; the pretrained LaLa-World and LaLa-Policy checkpoints will follow shortly.
 
 ## Installation
 
@@ -186,15 +185,31 @@ images stay in the HDF5 files).
 
 ### Training
 
-> 🚧 **Updating soon.** `python -m app.main --fname configs/lala_policy/<config>.yaml` with a config per benchmark:
-> LIBERO (4 suites, agentview + wrist, chunk 16), RoboCasa (24 tasks, about 50 human demos per task) and RoboCasa with
-> 300 MimicGen demos per task. `meta.init_from` points at the SigLIP2-So400M/14 LaLa-World checkpoint.
+```bash
+python -m app.main --fname configs/lala_policy/base.yaml --devices cuda:0 cuda:1 cuda:2 cuda:3 cuda:4 cuda:5 cuda:6 cuda:7
+```
+
+| config | data | views | chunk | epochs |
+|---|---|---|---|---|
+| `base.yaml` | LIBERO, 4 suites (Cosmos Policy replays) | agentview + wrist | 16 | 8 |
+| `robocasa.yaml` | RoboCasa, 24 tasks, about 50 human demos per task | left + right + wrist | 32 | 12 |
+| `robocasa_mg300.yaml` | RoboCasa, 300 MimicGen demos per task | left + right + wrist | 32 | 3 |
+
+`meta.init_from` is the SigLIP2-So400M/14 LaLa-World checkpoint (`null` = no world-model pretraining;
+`model.llm.pretrained: false` on top = random initialization). Global batch 256; about 5 hours for LIBERO and
+14 hours for RoboCasa on 8 x H100.
 
 ### Evaluation
 
-> 🚧 **Updating soon.** Direct policy rollouts with the Cosmos Policy protocol: LIBERO 4 suites x 10 tasks x 50
-> episodes and RoboCasa 24 tasks x 50 episodes on the 5 held-out scenes, run inside the simulator venvs from
-> [Installation](#installation).
+```bash
+bash evals/lala_policy/run_libero_all.sh checkpoints/lala-policy-libero.pth.tar lala-policy-libero 50 16          # 4 suites x 10 tasks x 50 episodes, 16 processes
+bash evals/lala_policy/run_robocasa_all.sh checkpoints/lala-policy-robocasa50.pth.tar lala-policy-robocasa 50 12  # 24 tasks x 50 episodes on the 5 held-out scenes
+```
+
+Direct policy rollouts with the Cosmos Policy protocol, one process per task inside the simulator venvs from
+[Installation](#installation); each script ends with `evals.lala_policy.collect` (`logs/policy_eval/summary.md`,
+Wilson 95% CIs). Single tasks, flow steps and decoding the imagined frames:
+[`evals/lala_policy/README.md`](evals/lala_policy/README.md).
 
 ### Checkpoints
 
@@ -231,7 +246,6 @@ tests/              unit tests (pytest tests)
 
 ## Roadmap
 
-- [ ] LaLa-Policy training and evaluation code
 - [ ] LaLa-World checkpoints on Hugging Face
 - [ ] LaLa-Policy checkpoints on Hugging Face
 - [ ] Decoder checkpoints on Hugging Face (one per encoder)

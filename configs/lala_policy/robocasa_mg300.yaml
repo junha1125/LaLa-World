@@ -1,0 +1,75 @@
+# LaLa-Policy: RoboCasa 24 tasks, 300 MimicGen demos per task, 3 views, chunk 32
+# 8 x H100: python -m app.main --fname configs/lala_policy/robocasa_mg300.yaml --devices cuda:0 cuda:1 cuda:2 cuda:3 cuda:4 cuda:5 cuda:6 cuda:7
+app: lala_policy
+folder: logs/lala_policy/robocasa_mg300
+meta:
+  seed: 234
+  dtype: bfloat16
+  quick_debug: false
+  load_checkpoint: false
+  read_checkpoint: null
+  init_from: checkpoints/lala-world-siglip2-so400m.pth.tar   # LaLa-World checkpoint (null = no world-model pretraining)
+  log_freq: 50
+  eval_freq: 1
+  save_every_freq: 2
+  save_keep_last: -1
+data:
+  stats_path: "${LALA_DATA_ROOT}/robocasa_mg/stats_300.json"
+  sources:
+    - {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/robocasa_mg/jsonl/robocasa_mg_300.jsonl", sample_mode: policy}
+    - {kind: policy_jsonl, path: "${LALA_DATA_ROOT}/robocasa_mg/jsonl/robocasa_mg_300.jsonl", sample_mode: rollout, balance_success: true}
+  aug: true                 # Cosmos-style train-time image augmentation
+  aug_stronger: true
+  max_text_tokens: 64
+  batch_size: 4             # per GPU
+  num_workers: 8
+  pin_mem: true
+model:
+  vision:                   # must match the init_from checkpoint
+    kind: siglip2
+    model_id: google/siglip2-so400m-patch14-224
+  llm:
+    kind: qwen3_5
+    model_id: Qwen/Qwen3.5-0.8B
+    num_layers: null
+    frozen: false
+    pretrained: true        # false = random-init LLM (with init_from: null = the random-init control)
+  policy:
+    views: [primary, secondary, wrist]
+    chunk_size: 32           # K actions per query
+    proprio_dim: 9
+    action_dim: 7
+    pv_pred: false            # true = also predict future proprio and value (Cosmos Policy targets)
+    action_head:
+      kind: flow              # flow = Isaac-GR00T flow-matching DiT | l1 = LayerNorm + Linear per slot
+      layers: 16
+      heads: 32
+      head_dim: 48
+      out_dim: 1024
+      dropout: 0.2
+      cond: all               # all = every LLM state | slots = the target-slot states only
+      time_beta: [1.5, 1.0]
+      noise_s: 0.999
+      timestep_buckets: 1000
+      steps: 4                # Euler steps at inference (override per run with --flow-steps)
+      state_dropout_p: 0.0
+loss:
+  action_w: 1.0
+  latent_w: 1.0
+  proprio_w: 1.0
+  value_w: 1.0
+optimization:
+  epochs: 3
+  samples_per_epoch: 0
+  grad_accum_steps: 8       # global batch = 4 x 8 GPUs x 8 = 256
+  lr: 1.0e-4
+  start_lr: 1.0e-6
+  final_lr: 1.0e-6
+  warmup_steps: 1000
+  weight_decay: 0.05
+  betas: [0.9, 0.98]
+  clip_grad: 1.0
+logging:
+  project: LaLa-Policy
+  use_wandb: false
+  run_name: null
