@@ -49,7 +49,8 @@ future representations.
 - [License](#license)
 
 > **(October 2026).** This repository is being populated. Environment setup, data preparation, the training and
-> evaluation code and the decoder are available now; the pretrained LaLa-World and LaLa-Policy checkpoints will follow shortly.
+> evaluation code, the LaLa-Policy checkpoints and the decoders are available now; the pretrained LaLa-World checkpoints
+> will follow shortly.
 
 ## Installation
 
@@ -216,9 +217,12 @@ Wilson 95% CIs). Single tasks and decoding the imagined frames:
 
 | model | training data | weights |
 |---|---|---|
-| LaLa-Policy (LIBERO) | LIBERO, 4 suites (Cosmos Policy replays) | coming soon |
-| LaLa-Policy (RoboCasa) | RoboCasa, 24 tasks, about 50 human demos per task | coming soon |
-| LaLa-Policy (RoboCasa, MimicGen) | RoboCasa, 300 MimicGen demos per task | coming soon |
+| LaLa-Policy (LIBERO) | LIBERO, 4 suites (Cosmos Policy replays) | [lala-policy-libero](https://huggingface.co/LaLa-World/lala-policy-libero) |
+| LaLa-Policy (RoboCasa) | RoboCasa, 24 tasks, about 50 human demos per task | [lala-policy-robocasa50](https://huggingface.co/LaLa-World/lala-policy-robocasa50) |
+| LaLa-Policy (RoboCasa, MimicGen) | RoboCasa, 300 MimicGen demos per task | [lala-policy-robocasa300](https://huggingface.co/LaLa-World/lala-policy-robocasa300) |
+
+`hf download LaLa-World/lala-policy-libero lala-policy-libero.pth.tar --local-dir checkpoints` puts a checkpoint where the
+commands above expect it.
 
 ## Decoder
 
@@ -270,7 +274,6 @@ tests/              unit tests (pytest tests)
 ## Roadmap
 
 - [ ] LaLa-World checkpoints on Hugging Face
-- [ ] LaLa-Policy checkpoints on Hugging Face
 - [ ] Planning evaluation on the environments provided by [Stable-WorldModel](https://github.com/galilai-group/stable-worldmodel)
 
 ## Citation
